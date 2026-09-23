@@ -29,10 +29,26 @@
 
 ## 作为 WorkBuddy 技能安装
 
-本仓库同时是一份 **WorkBuddy 开放平台 Skill 包**（`SKILL.md` + `references/` + `templates/`）：
+本仓库同时是一份 **WorkBuddy 技能包**（`SKILL.md` + `references/` + `templates/`），三种安装方式：
 
-- 在 [WorkBuddy 开放平台](https://open.workbuddy.cn/) 提交本包，或在技能市场搜索「山野精灵」；
-- 安装后对 WorkBuddy 说「打开晴雨表」「帮施工项目部定制停工阈值」即可由 AI 代为操作与定制。
+**方式一 · 技能市场（推荐）**
+在 WorkBuddy 技能市场搜索「山野精灵」或 `sayelf-qingyubiao` 直接安装（开放平台审核上架后可用）。
+
+**方式二 · 从 GitHub 本地安装**
+把本仓库克隆到 WorkBuddy 用户技能目录，重启 WorkBuddy 即生效：
+
+```bash
+# Windows（PowerShell）
+git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git "$env:USERPROFILE\.workbuddy\skills\sayelf-qingyubiao"
+
+# macOS / Linux
+git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy/skills/sayelf-qingyubiao
+```
+
+**方式三 · 免安装直用**
+下载 [`templates/山野精灵.晴雨表.html`](templates/山野精灵.晴雨表.html) 双击打开，功能完整。
+
+安装后对 WorkBuddy 说「打开晴雨表」「帮施工项目部定制停工阈值」即可由 AI 代为操作与定制。
 
 ## B 端定制
 
