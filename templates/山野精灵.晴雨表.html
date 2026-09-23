@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>山野精灵.晴雨表</title>
+<style>
+:root{
+  --bg:#ffffff; --bg2:#f7f7f5; --line:#e3e2dd; --line2:#d3d1c7;
+  --tx:#2c2c2a; --tx2:#5f5e5a; --tx3:#888780;
+  --info:#185fa5; --infoBg:#e6f1fb; --warn:#854f0b; --warnBg:#faeeda; --ok:#0f6e56; --okBg:#e1f5ee;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#f2f1ed;font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;color:var(--tx);font-size:13px;line-height:1.5;overflow:hidden}
+.wrap{height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+.top{flex:0 0 auto;border-bottom:1px solid var(--line)}
+.hd{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--bg);flex-wrap:wrap}
+.tt{font-size:15px;font-weight:600;letter-spacing:.3px}
+.sub{font-size:11px;color:var(--tx3)}
+.hd .logo{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);flex:0 0 auto;box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.bname{font-weight:600;color:var(--tx2)}
+.fdemo{width:15px;height:15px;border:1.5px dashed #b0aea2;border-radius:3px;flex:0 0 auto}
+.clock{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.cdate{font-size:11px;color:var(--tx2)}
+.sp{flex:1}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--infoBg);color:var(--info);white-space:nowrap}
+.pill.w{background:var(--warnBg);color:var(--warn)}
+.pill.g{background:var(--okBg);color:var(--ok)}
+button{font:inherit;font-size:11px;padding:4px 10px;border:1px solid var(--line2);border-radius:6px;background:var(--bg);color:var(--tx);cursor:pointer}
+button:hover{background:var(--bg2)}
+button:active{background:#eee}
+.stat{display:flex;gap:14px;padding:5px 14px 6px;background:var(--bg2);border-bottom:1px solid var(--line);flex-wrap:wrap;font-size:11px;color:var(--tx2)}
+.stat b{font-size:13px;font-weight:600;color:var(--tx);margin-left:4px;font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:2px;padding:0 14px;background:var(--bg)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;padding:6px 14px;font-size:12px;color:var(--tx2);background:transparent}
+.tabs button.on{border-bottom-color:var(--tx);color:var(--tx);font-weight:600}
+.tabs .sp2{flex:1}
+.body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.views{flex:1 1 auto;min-height:0;position:relative;overflow:hidden}
+.pane{position:absolute;inset:0;display:none;padding:8px 14px;flex-direction:column}
+.pane.on{display:flex}
+.pbar{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex:0 0 auto}
+.ptip{font-size:11px;color:var(--tx3);flex:1}
+select{font:inherit;font-size:11px;padding:3px 6px;border:1px solid var(--line2);border-radius:6px;background:var(--bg);color:var(--tx)}
+.grid{flex:1 1 auto;min-height:0}
+#gYear{display:grid;gap:2px;align-content:start;justify-content:start}
+#gYear .c{display:flex;align-items:center;justify-content:center;border-radius:3px;cursor:pointer;position:relative}
+#gYear .c:hover{outline:1.5px solid var(--tx)}
+#gYear .c.today{outline:2px solid #D85A30;outline-offset:1px}
+#gMon{display:grid;gap:8px;align-content:start}
+.ylab{font-size:11px;color:var(--tx2);cursor:pointer;user-select:none}
+.ylab:hover{color:var(--tx);font-weight:600;text-decoration:underline}
+.yhd{font-size:10px;color:var(--tx3);text-align:center;user-select:none}
+.mcard{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:5px 6px 6px;display:flex;flex-direction:column;min-height:0}
+.mcard.mfocus{border:2px solid #185fa5;background:var(--infoBg)}
+.mhd{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;margin-bottom:3px;flex:0 0 auto}
+.mhd b{font-size:12px;font-weight:600}
+.mhd span{color:var(--tx3);font-variant-numeric:tabular-nums}
+.mg{display:grid;grid-template-columns:repeat(7,1fr);gap:1.5px;align-content:start}
+.mg .c{display:flex;align-items:center;justify-content:center;border-radius:2px;cursor:pointer}
+.mg .c:hover{outline:1.5px solid var(--tx)}
+.mg .c.today{outline:2px solid #D85A30;outline-offset:1px}
+.mg .c.fut{outline:1.5px dashed #b0aea2;outline-offset:-1px}
+.mg .c.fut svg{opacity:.55}
+#gYear .c.fut{outline:1.5px dashed #b0aea2;outline-offset:-1px}
+#gYear .c.fut svg{opacity:.55}
+#gAm{display:grid;gap:4px;align-content:start;justify-content:start}
+.acell{background:var(--bg2);border:1px solid var(--line);border-radius:7px;display:flex;flex-direction:column;align-items:center;padding:3px 2px;cursor:pointer}
+.acell:hover{border-color:var(--tx2)}
+.aday{font-size:10px;color:var(--tx3);line-height:1.2}
+.arow{display:flex;gap:2px;align-items:center}
+.acell.today{border-color:#D85A30;border-width:2px}
+.acell.dfocus{border:2px solid #185fa5;background:var(--infoBg)}
+.acell.dfocus .aday{color:var(--info);font-weight:600}
+/* 场景决策视图 */
+.srow{border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:6px;min-width:0;overflow:hidden}
+.srow.today{border-color:#D85A30;border-width:2px}
+.srow.fut{border-style:dashed}
+.srowtop{display:flex;align-items:center;gap:10px}
+.sdate{font-size:13px;font-weight:600;color:var(--tx)}
+.swk{font-size:11px;color:var(--tx3)}
+.shalves{display:flex;gap:10px;flex:1;min-height:0}
+.shalf{flex:1;border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;min-width:0;justify-content:center}
+.shalf b{font-size:12px;white-space:nowrap}
+.shalf i{font-style:normal;font-size:11px;line-height:1.45;color:var(--tx2)}
+.shalf .sicon{display:flex;gap:8px;align-items:center;line-height:0}
+.shalf.ok{background:#e8f3e4}.shalf.ok b{color:#3c7a2e}
+.shalf.watch{background:#fdf3df}.shalf.watch b{color:#a06a12}
+.shalf.stop{background:#fbe9e7}.shalf.stop b{color:#b3402e}
+.shalf.none{background:var(--bg2)}.shalf.none b{color:var(--tx3)}
+.sstat{display:flex;gap:16px;font-size:11px;color:var(--tx2);flex-wrap:wrap;align-items:baseline}
+.sstat b{font-size:14px}
+.sstat .bad{color:#b3402e}
+.sstat .half{color:#a06a12}
+.legendbox{flex:0 0 auto;max-height:40vh;overflow:auto;border-top:1px solid var(--line);background:var(--bg);padding:6px 14px}
+.lg{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.lgi{display:flex;align-items:center;gap:5px}
+.lgi .nm{font-size:11px}
+.lgi .vl{font-size:10px;color:var(--tx3)}
+.note{font-size:10px;color:var(--tx3);margin-top:5px;line-height:1.5;border-top:1px dashed var(--line);padding-top:4px}
+.mask{position:absolute;inset:0;background:rgba(255,255,255,.86);display:none;align-items:center;justify-content:center;font-size:12px;color:var(--tx2);z-index:5}
+.mask.on{display:flex}
+.dlg{position:fixed;inset:0;background:rgba(0,0,0,.32);display:none;align-items:center;justify-content:center;z-index:20}
+.dlg.on{display:flex}
+.dbox{background:var(--bg);border-radius:12px;padding:16px 18px;width:340px;max-width:92vw;border:1px solid var(--line)}
+.dbox h3{font-size:14px;font-weight:600;margin-bottom:2px}
+.dbox .ds{font-size:11px;color:var(--tx3);margin-bottom:10px}
+.drow{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px}
+.drow label{width:74px;color:var(--tx2)}
+.drow input{flex:1;font:inherit;font-size:12px;padding:4px 7px;border:1px solid var(--line2);border-radius:6px;background:var(--bg);color:var(--tx)}
+.drow .u{font-size:11px;color:var(--tx3);width:22px}
+.dact{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.dcur{font-size:11px;color:var(--tx2);background:var(--bg2);border-radius:7px;padding:8px 10px;margin-bottom:10px;line-height:1.7}
+.dcur .k{color:var(--tx3)}
+button.pri{background:#185fa5;border-color:#185fa5;color:#fff}
+button.pri:hover{background:#124a82;border-color:#124a82}
+button.pri:active{background:#0e3c69}
+.exprev{display:flex;justify-content:center;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:10px;margin:8px 0}
+.exprev canvas{max-width:100%;display:block;box-shadow:0 1px 6px rgba(0,0,0,.16)}
+.drow select{flex:1;font:inherit;font-size:12px;padding:4px 7px;border:1px solid var(--line2);border-radius:6px;background:var(--bg);color:var(--tx)}
+.shgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:8px 0}
+.shb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border:1px solid var(--line2);border-radius:8px;background:var(--bg)}
+.shb b{font-size:12px;font-weight:600}
+.shb em{font-style:normal;font-size:10px;color:var(--tx3);font-variant-numeric:tabular-nums}
+.shb:hover{background:var(--bg2);border-color:var(--tx2)}
+.shb.on{border-color:#185fa5;background:var(--infoBg)}
+.shtxt{width:100%;height:76px;font:inherit;font-size:11px;padding:7px 9px;border:1px solid var(--line2);border-radius:7px;background:var(--bg2);color:var(--tx);resize:none;line-height:1.6}
+.shtip{font-size:10px;color:var(--tx3);margin-top:6px;line-height:1.6;border-top:1px dashed var(--line);padding-top:5px}
+.price{display:flex;gap:8px;margin:8px 0}
+.pc{flex:1;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;text-align:center;background:var(--bg);cursor:pointer}
+.pc b{font-size:12px;font-weight:600}
+.pc em{display:block;font-style:normal;font-size:16px;font-weight:700;color:var(--tx);margin-top:1px}
+.pc i{display:block;font-style:normal;font-size:10px;color:var(--ok);margin-top:2px}
+.pc:hover{background:var(--bg2);border-color:var(--tx2)}
+.pc.hot{border-color:#185fa5;background:var(--infoBg)}
+#licp{cursor:pointer}
+#licIn{font-family:ui-monospace,Menlo,Consolas,monospace}
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .hd button,.tabs{display:none}
+  .legendbox{overflow:visible}
+  .note{display:none}
+  @page{size:A4 landscape;margin:10mm}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="hd">
+      <img class="logo" alt="山野精灵.晴雨表" title="山野精灵.晴雨表 · SAYELF" src="data:image/jpeg;base64,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">
+      <div>
+<div class="tt" id="tt">重庆 · 南岸区 · 山野精灵.晴雨表</div>
+    <div class="sub"><span id="geo">29.53°N 106.57°E</span> · <span class="bname">山野精灵.晴雨表</span> · GB/T 28592-2012 降水量等级</div>
+      </div>
+      <div style="padding-left:12px;border-left:1px solid var(--line)">
+        <div class="clock" id="ck">--:--:--</div>
+        <div class="cdate" id="cd">----</div>
+      </div>
+      <div class="sp"></div>
+      <span class="pill w" id="loc">未定位</span>
+      <span class="pill" id="src">未同步</span>
+      <span class="pill" id="licp" onclick="openSub('')" title="点击查看订阅状态"></span>
+      <button onclick="geolocate(0)" title="用浏览器定位或 IP 定位重新获取当前位置">重新定位</button>
+      <button onclick="saveAs()" title="按定位地名另存一份副本">另存为</button>
+      <button onclick="sync(1)">立即同步</button>
+      <button onclick="openEx()">导出</button>
+      <button class="pri" onclick="openSh()" title="生成各平台尺寸的分享长图并复制文案">一键分享</button>
+      <button onclick="document.getElementById('imp').click()">导入</button>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="impJSON(this)">
+    </div>
+    <div class="stat" id="stat"></div>
+    <div class="tabs">
+      <button id="tb0" class="on" onclick="tab(0)">年度视图</button>
+      <button id="tb1" onclick="tab(1)">月度视图</button>
+      <button id="tb2" onclick="tab(2)">上下午分段</button>
+      <button id="tb3" onclick="tab(3)" title="按行业阈值给出可作业 / 有条件 / 停工建议（订阅功能）">场景决策</button>
+      <div class="sp2"></div>
+      <span class="sub" id="sch"></span>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="views">
+      <div class="pane on" id="p0">
+        <div class="pbar">
+          <select id="yr" onchange="year=+this.value;render()"></select>
+          <span class="ptip">逐日天气图案 · 虚线为未来三天预报 · 点月份跳月度视图 · 点某天跳上下午分段</span>
+        </div>
+        <div class="grid" id="gYear"></div>
+      </div>
+      <div class="pane" id="p1">
+        <div class="pbar">
+          <select id="yr2" onchange="year=+this.value;render()"></select>
+          <span class="ptip">12 个月日历 · 方格按星期对齐（周一起）· 虚线为预报 · 点某天跳上下午分段</span>
+        </div>
+        <div class="grid" id="gMon"></div>
+      </div>
+      <div class="pane" id="p2">
+        <div class="pbar">
+          <select id="yr3" onchange="year=+this.value;render()"></select>
+          <select id="mo" onchange="month=+this.value;render()"></select>
+          <span class="ptip">上午 05:00-12:00 · 下午 12:00-21:00 · 虚线段为预报 · 点某天可校订官方值</span>
+        </div>
+        <div class="grid" id="gAm"></div>
+      </div>
+      <div class="pane" id="p3">
+        <div class="pbar">
+          <select id="scn" onchange="render()"></select>
+          <span class="ptip">把降水翻译成作业语言：可作业 / 有条件 / 建议停 · 今天实测 + 未来三天预报（虚线）· 阈值可在脚本 SCENES 处按客户规程调整</span>
+        </div>
+        <div class="grid" id="gSc"></div>
+      </div>
+      <div class="mask" id="mk">数据加载中…</div>
+    </div>
+
+    <div class="legendbox">
+      <div class="lg" id="lg"></div>
+      <div class="note" id="note"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="dlg" id="dlg" onclick="if(event.target===this)closeDlg()">
+  <div class="dbox">
+    <h3 id="dt">日期</h3>
+    <div class="ds">官方值填写后优先显示，并标注「官方」</div>
+    <div class="dcur" id="dc"></div>
+    <div class="drow"><label>上午 mm</label><input id="oa" type="number" step="0.1" min="0"><span class="u">mm</span></div>
+    <div class="drow"><label>下午 mm</label><input id="op" type="number" step="0.1" min="0"><span class="u">mm</span></div>
+    <div class="drow"><label>全天 mm</label><input id="od" type="number" step="0.1" min="0"><span class="u">mm</span></div>
+    <div class="dact">
+      <button onclick="clearOff()">清除官方值</button>
+      <button onclick="closeDlg()">取消</button>
+      <button onclick="saveOff()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="dlg" id="exDlg" onclick="if(event.target===this)closeEx()">
+  <div class="dbox" style="width:430px">
+    <h3>导出图片 / PDF</h3>
+    <div class="ds">图案、配色、图例与屏幕完全一致，含统计条，A4 可直接打印</div>
+    <div class="drow"><label>内容</label><select id="exMode" onchange="exPrev()"></select></div>
+    <div class="drow"><label>纸张</label><select id="exPaper" onchange="exPrev()">
+      <option value="L">A4 横向（年度视图推荐）</option>
+      <option value="P">A4 纵向</option></select></div>
+    <div class="drow"><label>清晰度</label><select id="exDpi" onchange="exPrev()">
+      <option value="150">150 dpi</option><option value="200" selected>200 dpi</option><option value="300">300 dpi</option></select></div>
+    <div class="exprev"><canvas id="exPrev" width="300" height="212"></canvas></div>
+    <div class="dact">
+      <button onclick="expJSON()" title="导出记录数据，可在另一台电脑导入">数据 JSON</button>
+      <button onclick="printPage()" title="调起浏览器打印对话框">打印</button>
+      <button onclick="closeEx()">关闭</button>
+      <button class="pri" onclick="doExp('png')">导出 PNG</button>
+      <button class="pri" onclick="doExp('pdf')">导出 PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="dlg" id="shDlg" onclick="if(event.target===this)closeSh()">
+  <div class="dbox" style="width:470px">
+    <h3>一键分享</h3>
+    <div class="ds">微信 / 朋友圈 / 抖音 / 视频号都没有开放给网页的直连分享接口（需平台 SDK 与服务端签名）。这里的做法：按各平台推荐尺寸生成分享长图 —— 手机上会调起系统分享面板直接选微信或抖音；电脑上自动保存图片并复制文案，发布时从相册选这张图即可。</div>
+    <div class="shgrid" id="shGrid"></div>
+    <div class="exprev"><canvas id="shPrev" width="240" height="320"></canvas></div>
+    <textarea class="shtxt" id="shTxt" spellcheck="false"></textarea>
+    <div class="shtip" id="shTip"></div>
+    <div class="dact">
+      <button onclick="copyShare()">复制文案</button>
+      <button onclick="dlShare()">保存图片</button>
+      <button onclick="sysShare()">系统分享</button>
+      <button onclick="closeSh()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="dlg" id="licDlg" onclick="if(event.target===this)closeSub()">
+  <div class="dbox" style="width:430px">
+    <h3 id="licT">解锁 山野精灵.晴雨表</h3>
+    <div class="ds" id="licS"></div>
+    <div class="price">
+      <div class="pc" id="pcM" onclick="pickTier('M')"><b>月费</b><em>¥5 / 月</em><i>随时可停</i></div>
+      <div class="pc hot" id="pcY" onclick="pickTier('Y')"><b>年费</b><em>¥12 / 年</em><i>折合 ¥1 / 月</i></div>
+    </div>
+    <div class="drow"><label>授权码</label><input id="licIn" placeholder="QY-…" spellcheck="false"></div>
+    <div class="dact">
+      <button onclick="copyPayText()">复制付款说明</button>
+      <button onclick="closeSub()">关闭</button>
+      <button class="pri" onclick="doActivate()">激活</button>
+    </div>
+    <div class="shtip" id="licTip"></div>
+  </div>
+</div>
+
+<script>
+/* ============ 常量与配色 ============ */
+var SNAPSHOT=document.documentElement.outerHTML;   /* 渲染前的干净 DOM，供「另存为」使用 */
+var LAT=29.53, LON=106.57, TZ='Asia/Shanghai';
+var KEY='cq_nanan_rain_v1';
+/* 统一名称与 IP 落款：改名只动这两行 */
+var APP_NAME='山野精灵.晴雨表';
+var APP_IP='山野精灵 · SAYELF';
+var AM=[5,6,7,8,9,10,11];      /* 05:00-12:00 */
+var PM=[12,13,14,15,16,17,18,19,20]; /* 12:00-21:00 */
+
+/* 高饱和纯色相：晴=金黄 | 多云=淡蓝 阴=灰蓝 | 雨=蓝系由浅入深 | 暴雨=紫系 */
+var C={
+ sun:['#FFA000','#E65100'], cloud:['#90CAF9','#1565C0'], over:['#78909C','#37474F'],
+ light:['#26C6DA','#00838F'], mod:['#2196F3','#1565C0'], heavy:['#1565C0','#0D47A1'],
+ storm:['#8E24AA','#6A1B9A'], dstorm:['#6A1B9A','#4A148C'], none:['#ECEFF1','#B0BEC5']
+};
+var LEG=[
+ ['sun','晴','无降水 云量<30%'],['cloud','多云','无降水 30-70%'],['over','阴','无降水 >70%'],
+ ['light','小雨','0.1-9.9mm'],['mod','中雨','10-24.9mm'],['heavy','大雨','25-49.9mm'],
+ ['storm','暴雨','50-99.9mm'],['dstorm','大暴雨','≥100mm'],['none','未记录','无数据']
+];
+
+/* ============ 图标 ============ */
+function svg(t,s){
+  var c=C[t]||C.none, w=Math.max(6,Math.round(s));
+  var sun='<circle cx="8" cy="8" r="3" fill="'+c[0]+'"/><g stroke="'+c[1]+'" stroke-width="0.95" stroke-linecap="round"><line x1="8" y1="1.2" x2="8" y2="2.9"/><line x1="8" y1="13.1" x2="8" y2="14.8"/><line x1="1.2" y1="8" x2="2.9" y2="8"/><line x1="13.1" y1="8" x2="14.8" y2="8"/><line x1="3.2" y1="3.2" x2="4.4" y2="4.4"/><line x1="11.6" y1="11.6" x2="12.8" y2="12.8"/><line x1="12.8" y1="3.2" x2="11.6" y2="4.4"/><line x1="4.4" y1="11.6" x2="3.2" y2="12.8"/></g>';
+  var cl='<path d="M4.3 11.4a2.6 2.6 0 0 1 .3-5.2 3.4 3.4 0 0 1 6.6-.6 2.4 2.4 0 0 1-.3 5.8z" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="0.8"/>';
+  var ov=cl+'<circle cx="6.1" cy="9.2" r="0.5" fill="'+c[1]+'"/><circle cx="9.7" cy="8.3" r="0.5" fill="'+c[1]+'"/><circle cx="8" cy="10.5" r="0.5" fill="'+c[1]+'"/>';
+  var d='';
+  function ln(x1,y1,x2,y2,sw){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+C[t][1]+'" stroke-width="'+sw+'" stroke-linecap="round"/>';}
+  if(t==='light'){d=ln(6.4,12.2,5.7,15.0,1.1);}
+  if(t==='mod'){d=ln(5,12.2,4.3,15.2,1.1)+ln(8,12.2,7.3,15.2,1.1)+ln(11,12.2,10.3,15.2,1.1);}
+  if(t==='heavy'){d=ln(4.5,12.2,3.7,15.6,1.25)+ln(7.2,12.2,6.4,15.6,1.25)+ln(9.9,12.2,9.1,15.6,1.25)+ln(12.6,12.2,11.8,15.6,1.25);}
+  if(t==='storm'){d=ln(4.4,12.2,3.4,15.7,1.35)+ln(6.1,12.2,5.2,15.7,1.35)+ln(7.8,12.2,6.9,15.7,1.35)+ln(9.5,12.2,8.6,15.7,1.35)+ln(11.2,12.2,10.3,15.7,1.35)+ln(12.9,12.2,12.0,15.7,1.35)+ln(6.95,12.2,6.95,15.7,1.35)+ln(10.35,12.2,10.35,15.7,1.35);}
+  if(t==='dstorm'){d=ln(4.2,12.2,3.1,15.8,1.45)+ln(5.8,12.2,4.7,15.8,1.45)+ln(7.4,12.2,6.3,15.8,1.45)+ln(9.0,12.2,7.9,15.8,1.45)+ln(10.6,12.2,9.5,15.8,1.45)+ln(12.2,12.2,11.1,15.8,1.45)+ln(13.8,12.2,12.7,15.8,1.45)+ln(6.6,12.2,6.6,15.8,1.45)+ln(9.8,12.2,9.8,15.8,1.45);}
+  var b;
+  if(t==='sun')b=sun; else if(t==='cloud')b=cl; else if(t==='over')b=ov;
+  else if(t==='none')b='<rect x="1.6" y="1.6" width="12.8" height="12.8" rx="2" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="0.7" stroke-dasharray="2 1.6"/>';
+  else b=cl+d;
+  return '<svg width="'+w+'" height="'+w+'" viewBox="0 0 16 16" style="display:block">'+b+'</svg>';
+}
+function cell(t,s,lbl,extra){
+  return '<div class="c'+(extra||'')+'" title="'+lbl+'" style="width:'+Math.round(s)+'px;height:'+Math.round(s)+'px;background:'+C[t][0]+'40">'+
+    '<div style="width:'+Math.round(s)+'px;height:'+Math.round(s)+'px;display:flex;align-items:center;justify-content:center">'+svg(t,s-2)+'</div></div>';
+}
+
+/* ============ 分级 ============ */
+function cls(mm,cloud){
+  if(mm==null||!isFinite(mm))return 'none';
+  if(mm>=100)return 'dstorm';
+  if(mm>=50)return 'storm';
+  if(mm>=25)return 'heavy';
+  if(mm>=10)return 'mod';
+  if(mm>=0.1)return 'light';
+  if(cloud==null||!isFinite(cloud))return 'cloud';
+  if(cloud>70)return 'over';
+  if(cloud>=30)return 'cloud';
+  return 'sun';
+}
+function nm(t){for(var i=0;i<LEG.length;i++)if(LEG[i][0]===t)return LEG[i][1];return t;}
+
+/* ============ 存储 ============ */
+/* 数据按「地点」隔离存放，切换城市时不会串用上一个地方的天气与校订值 */
+var S={places:{},cur:'',meta:{}};
+var PL={prov:'重庆',city:'重庆',local:'南岸区',by:''};
+function pkey(){return LAT.toFixed(3)+','+LON.toFixed(3);}
+function cur(){
+  var k=pkey();
+  if(!S.places[k])S.places[k]={prov:PL.prov,city:PL.city,local:PL.local,lat:LAT,lon:LON,years:{},official:{},locks:{}};
+  return S.places[k];
+}
+function load(){
+  try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&typeof o==='object')S=o;}}catch(e){}
+  if(!S.places)S.places={}; if(!S.meta)S.meta={};
+  /* 迁移旧版「单地点」结构，避免老数据丢失 */
+  if(S.years||S.official||S.locks){
+    var k0=(29.53).toFixed(3)+','+(106.57).toFixed(3);
+    if(!S.places[k0])S.places[k0]={prov:'重庆',city:'重庆',local:'南岸区',lat:29.53,lon:106.57,
+      years:S.years||{},official:S.official||{},locks:S.locks||{}};
+    delete S.years; delete S.official; delete S.locks;
+  }
+  /* 恢复上次定位 */
+  if(S.cur&&S.places[S.cur]){
+    var p=S.places[S.cur];
+    LAT=p.lat; LON=p.lon; PL={prov:p.prov||'重庆',city:p.city||'重庆',local:p.local||'南岸区',by:p.by||''};
+  }
+}
+function save(){try{S.cur=pkey();localStorage.setItem(KEY,JSON.stringify(S));}catch(e){alert('本地存储写入失败：'+e.message);}}
+
+/* ============ 日期工具 ============ */
+function pad(n){return n<10?'0'+n:''+n;}
+function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function addDays(d,n){var x=new Date(d.getTime());x.setDate(x.getDate()+n);return x;}
+function daysIn(y,m){return new Date(y,m,0).getDate();}
+var WD='日一二三四五六';
+
+/* ============ 数据获取与聚合 ============ */
+function jget(u){
+  return fetch(u,{cache:'no-store'}).then(function(r){
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return r.text();
+  }).then(function(t){return JSON.parse(t);});
+}
+/* 将 hourly 序列聚合为按日记录 */
+function agg(h,out){
+  if(!h||!h.time)return out;
+  var P=h.precipitation||[], Cc=h.cloud_cover||h.cloudcover||[];
+  for(var i=0;i<h.time.length;i++){
+    var ts=h.time[i], d=ts.slice(0,10), hr=parseInt(ts.slice(11,13),10);
+    var p=P[i]; p=(typeof p==='number'&&isFinite(p))?p:0;
+    var c=Cc[i]; c=(typeof c==='number'&&isFinite(c))?c:null;
+    if(!out[d])out[d]={am:0,pm:0,day:0,ac:[],pc:[],dc:[],n:0};
+    var o=out[d]; o.day+=p; if(c!=null)o.dc.push(c);
+    if(AM.indexOf(hr)>=0){o.am+=p;if(c!=null)o.ac.push(c);}
+    if(PM.indexOf(hr)>=0){o.pm+=p;if(c!=null)o.pc.push(c);}
+    o.n++;
+  }
+  return out;
+}
+function avg(a){if(!a.length)return null;var s=0;for(var i=0;i<a.length;i++)s+=a[i];return s/a.length;}
+function fin(o){
+  var r={am:o.am,pm:o.pm,day:o.day};
+  r.amC=(o.ac.length?Math.round(avg(o.ac)):null);
+  r.pmC=(o.pc.length?Math.round(avg(o.pc)):null);
+  r.dayC=(o.dc.length?Math.round(avg(o.dc)):null);
+  r.partial=o.n<24;
+  return r;
+}
+function fetchYear(y,force){
+  var today=new Date(), ty=today.getFullYear();
+  if(cur().years[y]&&!force)return Promise.resolve(cur().years[y]);
+  var out={};
+  var endD = (y===ty)? addDays(today,-5) : new Date(y,11,31);
+  var p1=Promise.resolve(null), p2=Promise.resolve(null);
+  var startS=y+'-01-01';
+  if(endD>=new Date(y,0,1)){
+    var eS=ymd(endD);
+    p1=jget('https://archive-api.open-meteo.com/v1/archive?latitude='+LAT+'&longitude='+LON+
+      '&start_date='+startS+'&end_date='+eS+'&hourly=precipitation,cloud_cover&timezone='+encodeURIComponent(TZ));
+  }
+  if(y===ty){
+    p2=jget('https://api.open-meteo.com/v1/forecast?latitude='+LAT+'&longitude='+LON+
+      '&hourly=precipitation,cloud_cover&past_days=7&forecast_days=4&timezone='+encodeURIComponent(TZ));
+  }
+  return Promise.all([p1,p2]).then(function(rs){
+    if(rs[0])agg(rs[0].hourly,out);
+    if(rs[1])agg(rs[1].hourly,out);
+    var f={};
+    Object.keys(out).forEach(function(k){if(k.slice(0,4)===String(y))f[k]=fin(out[k]);});
+    cur().years[y]=f; S.meta.lastSync=new Date().toISOString(); save();
+    return f;
+  });
+}
+
+/* 轻量刷新：只重取近 7 天实况 + 未来 2 天预报，覆盖进已有年度聚合，避免每次都拉整年 */
+function refreshRecent(y){
+  var u='https://api.open-meteo.com/v1/forecast?latitude='+LAT+'&longitude='+LON+
+    '&hourly=precipitation,cloud_cover&past_days=7&forecast_days=4&timezone='+encodeURIComponent(TZ);
+  return jget(u).then(function(r){
+    var out={}; agg(r.hourly,out);
+    var f=cur().years[y]||(cur().years[y]={});
+    Object.keys(out).forEach(function(k){if(k.slice(0,4)===String(y))f[k]=fin(out[k]);});
+    S.meta.lastSync=new Date().toISOString(); save(); return f;
+  });
+}
+
+/* ============ 记录取值（官方优先） ============ */
+function rec(d){
+  var y=d.slice(0,4), base=(cur().years[y]&&cur().years[y][d])||null;
+  var o=cur().official[d]||{};
+  var now=new Date(), today=ymd(now), h=now.getHours();
+  var r={am:null,pm:null,day:null,amC:null,pmC:null,dayC:null,off:false,partial:false,fut:false,pAM:false,pPM:false};
+  if(base){r.am=base.am;r.pm=base.pm;r.day=base.day;r.amC=base.amC;r.pmC=base.pmC;r.dayC=base.dayC;r.partial=!!base.partial;}
+  r.fut = (d>today) || (base==null);
+  r.pAM = (d>today) || (d===today && h<12);
+  r.pPM = (d>today) || (d===today && h<21);
+  if(o.am!=null){r.am=o.am;r.off=true;}
+  if(o.pm!=null){r.pm=o.pm;r.off=true;}
+  if(o.day!=null){r.day=o.day;r.off=true;}
+  return r;
+}
+function tag(r){
+  /* 生成来源标记文本 */
+  var t=[];
+  if(r.off)t.push('官方');
+  if(r.fut)t.push('预报');
+  else if(r.partial)t.push('未完整');
+  return t.length?' ['+t.join(' ')+']':'';
+}
+function tagAM(r){return tag({off:r.off,fut:r.pAM,partial:false});}
+function tagPM(r){return tag({off:r.off,fut:r.pPM,partial:false});}
+/* 该日是否为「预报值」：未来日期且有数据（forecast_days 内）。无数据的远期日不算 */
+function isFut(r){return !!(r&&r.fut&&r.day!=null);}
+
+/* ============ 场景决策（FDE：把降水阈值翻译成客户的作业语言） ============ */
+/* 每个场景 = 一份按客户作业规程定制的阈值表。rules 从严到宽排列，取第一条 mm<max 命中。
+   level: ok=可作业 watch=有条件/注意 stop=建议停工/防护。
+   B 端定制时只需增删改这里，界面与导出自动跟随。 */
+var SCENES={
+ '通用参考':{rules:[
+   {max:0.1, level:'ok',   txt:'无降水，正常安排'},
+   {max:10,  level:'ok',   txt:'小雨，户外作业基本不受影响，备好雨具'},
+   {max:25,  level:'watch',txt:'中雨，关注排水与防滑，高处 / 电气作业提前收尾'},
+   {max:50,  level:'stop', txt:'大雨，停止露天作业，转移低洼物资'},
+   {max:9999,level:'stop', txt:'暴雨及以上，停工避险，加强巡查'}]},
+ '建筑施工':{rules:[
+   {max:0.1, level:'ok',   txt:'可正常施工：土方、混凝土浇筑、吊装均可'},
+   {max:1,   level:'watch',txt:'微量降雨：浇筑需覆盖或留置施工缝，饰面 / 防水 / 涂料停做'},
+   {max:10,  level:'stop', txt:'小雨：停止混凝土浇筑与防水保温作业，土方做好降排水'},
+   {max:25,  level:'stop', txt:'中雨：露天作业全停，检查基坑边坡与临时用电'},
+   {max:9999,level:'stop', txt:'大雨及以上：全面停工，撤离低洼设备，基坑加密监测'}]},
+ '农业种植':{rules:[
+   {max:0.1, level:'ok',   txt:'适宜：喷药、授粉、采摘、整地均可'},
+   {max:10,  level:'watch',txt:'小雨：喷药停做（雨水冲刷失效），抢收易损果实'},
+   {max:25,  level:'watch',txt:'中雨：清沟排水防渍涝，大田停止进人'},
+   {max:50,  level:'stop', txt:'大雨：防涝排渍，检查大棚压膜线与排水泵'},
+   {max:9999,level:'stop', txt:'暴雨：排涝抢险，大棚 / 畜禽舍加固，防山洪'}]},
+ '户外物流':{rules:[
+   {max:0.1, level:'ok',   txt:'干线运输与装卸可正常安排'},
+   {max:10,  level:'ok',   txt:'小雨：装卸照常，贵重货物加盖苫布'},
+   {max:25,  level:'watch',txt:'中雨：山区线路防塌方，纸质包装防潮，留意高速管制'},
+   {max:50,  level:'stop', txt:'大雨：延迟发车，涉水路段禁行，临时仓储做防水检查'},
+   {max:9999,level:'stop', txt:'暴雨：暂停山区 / 低洼线路，枢纽站转移物资'}]}
+};
+var LVTXT={ok:'可作业',watch:'有条件',stop:'建议停',none:'无数据'};
+/* 命中第一条 mm<max 的规则（rules 从严到宽排列） */
+function verdict(mm,scene){
+  var sc=SCENES[scene]||SCENES['通用参考'];
+  if(mm==null||!isFinite(mm))return {level:'none',txt:'暂无数据'};
+  for(var i=0;i<sc.rules.length;i++)if(mm<sc.rules[i].max)return {level:sc.rules[i].level,txt:sc.rules[i].txt};
+  var L=sc.rules[sc.rules.length-1];
+  return {level:L.level,txt:L.txt};
+}
+/* 本月因雨统计：建议停 / 有条件 的半天数（按当前视图年月实测值，用于排期对账） */
+function sceneStat(scene){
+  var f=cur().years[String(year)]||{}, today=ymd(new Date()), stop=0, watch=0;
+  for(var d=1;d<=daysIn(year,month);d++){
+    var ds=year+'-'+pad(month)+'-'+pad(d); if(ds>today)continue;
+    var r=rec(ds), va=verdict(r.am,scene), vp=verdict(r.pm,scene);
+    if(va.level==='stop')stop++; if(va.level==='watch')watch++;
+    if(vp.level==='stop')stop++; if(vp.level==='watch')watch++;
+  }
+  return {stop:stop,watch:watch};
+}
+function tp(r,k){
+  if(k==='am')return cls(r.am,r.amC);
+  if(k==='pm')return cls(r.pm,r.pmC);
+  return cls(r.day,r.dayC);
+}
+
+/* ============ 自动落库调度 ============ */
+function lockCheck(){
+  var now=new Date(), d=ymd(now), h=now.getHours();
+  var y=String(now.getFullYear());
+  if(!cur().years[y])return;
+  if(!cur().locks)cur().locks={};
+  var L=cur().locks[d]||(cur().locks[d]={});
+  var did=null;
+  if(h>=12&&!L.am){L.am=new Date().toISOString();did='上午段 05:00-12:00';}
+  if(h>=21&&!L.pm){L.pm=new Date().toISOString();did='下午段 12:00-21:00';}
+  if(did){save();toast('已按时自动记录：'+did);}
+}
+function nextSched(){
+  var n=new Date(),h=n.getHours();
+  var t=(h<12)?'12:00':(h<21?'21:00':'次日 12:00');
+  return '下次自动记录 '+t;
+}
+
+/* ============ 渲染 ============ */
+var year=new Date().getFullYear(), month=new Date().getMonth()+1, curTab=0;
+var focusMonth=0, focusDay=null;   /* 跨视图跳转的聚焦目标 */
+function syncSel(){
+  document.getElementById('yr').value=year;
+  document.getElementById('yr2').value=year;
+  document.getElementById('yr3').value=year;
+  document.getElementById('mo').value=month;
+}
+/* 年度视图点月份 → 月度视图并高亮该月 */
+function goMonth(m){focusMonth=m;focusDay=null;tab(1);}
+/* 年度 / 月度视图点某天 → 上下午分段视图并高亮该日 */
+function goDay(ds){
+  var p=ds.split('-');
+  year=+p[0]; month=+p[1]; focusDay=ds; focusMonth=month;
+  syncSel(); tab(2);
+}
+function tab(i){
+  if(i===3&&!gate('场景决策'))return;   /* 场景决策为订阅功能 */
+  curTab=i;
+  for(var k=0;k<4;k++){document.getElementById('p'+k).className='pane'+(k===i?' on':'');document.getElementById('tb'+k).className=(k===i?'on':'');}
+  render();
+}
+function mask(on,tx){var m=document.getElementById('mk');m.className='mask'+(on?' on':'');if(tx)m.textContent=tx;}
+
+function fit(count,W,H,gap,ratio,maxS,minS){
+  var best=minS;
+  for(var s=minS;s<=maxS;s+=0.5){
+    var cw=ratio*s+2, ch=s+2;
+    var cols=Math.max(1,Math.floor((W+gap)/(cw+gap)));
+    var rows=Math.ceil(count/cols);
+    if(rows*(ch+gap)-gap<=H)best=s; else break;
+  }
+  return best;
+}
+
+function render(){
+  var G=document.getElementById(curTab===0?'gYear':(curTab===1?'gMon':(curTab===2?'gAm':'gSc')));
+  var W=G.clientWidth||800, H=G.clientHeight||400;
+  if(curTab===0)rYear(W,H); else if(curTab===1)rMon(W,H); else if(curTab===2)rAm(W,H); else rScene(W,H);
+  rStat();
+}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+/* 年度：12 行（月）× 31 列（日）矩阵，行首带月份标签，行距吸收剩余高度 */
+function rYear(W,H){
+  var g=document.getElementById('gYear'), LW=34, HDH=17;
+  var HH=Math.max(120,H-HDH);   /* 扣掉顶部日期刻度行的高度 */
+  var s=Math.max(8,Math.min((W-LW-62)/31,(HH-70)/12,60));   /* 预留格内留白 48px + 行距 22px */
+  var gy=clamp((HH-12*(s+4))/11,2,18);
+  var step=s<12?5:(s<17?2:1);   /* 格子窄时只显示关键刻度，避免数字挤在一起 */
+  var today=ymd(new Date()), h='';
+  h+='<div class="yrow" style="display:flex;align-items:center;gap:2px;margin-bottom:3px">'+
+     '<div style="width:'+LW+'px"></div><div style="display:flex;gap:2px">';
+  for(var i=1;i<=31;i++){
+    var show=(i===1||i===31||i%step===0);
+    h+='<div class="yhd" style="width:'+Math.round(s)+'px">'+((show&&s>=9)?i:'')+'</div>';
+  }
+  h+='</div></div>';
+  for(var m=0;m<12;m++){
+    var n=daysIn(year,m+1);
+    h+='<div class="yrow" style="display:flex;align-items:center;gap:2px;margin-bottom:'+(m===11?0:Math.round(gy))+'px">'+
+       '<div class="ylab" data-m="'+(m+1)+'" title="点击跳到 '+(m+1)+'月 的月度视图" style="width:'+LW+'px;text-align:right;padding-right:6px">'+(m+1)+'月</div>'+
+       '<div style="display:flex;gap:2px">';
+    for(var dd=1;dd<=31;dd++){
+      if(dd>n){h+='<div style="width:'+Math.round(s)+'px;height:'+Math.round(s)+'px"></div>';continue;}
+      var ds=year+'-'+pad(m+1)+'-'+pad(dd), r=rec(ds), t=tp(r,'day');
+      var mm=(r.day==null)?'—':(Math.round(r.day*10)/10)+'mm';
+      h+='<div class="c'+(ds===today?' today':'')+(isFut(r)?' fut':'')+'" data-d="'+ds+'" title="'+ds+' '+nm(t)+' '+mm+tag(r)+'（点击跳到上下午分段）" style="width:'+Math.round(s)+'px;height:'+Math.round(s)+'px;background:'+C[t][0]+'40">'+
+        '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">'+svg(t,s-3)+'</div></div>';
+    }
+    h+='</div></div>';
+  }
+  g.style.display='block';
+  g.innerHTML=h;
+  g.onclick=function(e){
+    var lab=e.target.closest('.ylab');
+    if(lab){goMonth(+lab.dataset.m);return;}
+    var c=e.target.closest('.c');
+    if(c&&c.dataset.d)goDay(c.dataset.d);
+  };
+}
+function rMon(W,H){
+  var g=document.getElementById('gMon');
+  /* 在 2-6 列中试算，取「格子尺寸 × 卡内填充率」最优者，保证图案尽量撑满且格子够大 */
+  var gap=8, best=null;
+  [2,3,4,5,6].forEach(function(cols){
+    var rows=Math.ceil(12/cols);
+    var cardH=Math.max(70,(H-(rows-1)*gap)/rows), cardW=(W-(cols-1)*gap)/cols;
+    var innerH=cardH-26, innerW=cardW-14;
+    var cs=Math.max(7,Math.min((innerW-12)/7,(innerH-10)/6));
+    var fill=Math.min(1,(6*cs+12)/innerH);
+    var score=cs*(0.35+0.65*fill);
+    if(!best||score>best.score)best={cols:cols,rows:rows,cardH:cardH,cardW:cardW,cs:cs,fill:fill,score:score};
+  });
+  var cols=best.cols, rows=best.rows;
+  var cardH=best.cardH, cardW=best.cardW, cs=best.cs;
+  g.style.gridTemplateColumns='repeat('+cols+',1fr)';
+  var today=ymd(new Date()), h='';
+  for(var m=0;m<12;m++){
+    var n=daysIn(year,m+1), first=new Date(year,m,0).getDay();
+    var off=(first+6)%7;
+    var rowsM=Math.ceil((off+n)/7);
+    var innerH=cardH-26, innerW=cardW-14;
+    var gx=clamp((innerW-7*cs)/6,1.5,10), gy=clamp((innerH-rowsM*cs)/(rowsM-1||1),1.5,10);
+    var sum=0,cnt=0,h2='';
+    for(var k=0;k<off;k++)h2+='<div></div>';
+    for(var dd=1;dd<=n;dd++){
+      var ds=year+'-'+pad(m+1)+'-'+pad(dd), r=rec(ds), t=tp(r,'day');
+      if(r.day!=null){sum+=r.day;cnt++;}
+      var mm=(r.day==null)?'—':(Math.round(r.day*10)/10)+'mm';
+      h2+='<div class="c'+(ds===today?' today':'')+(isFut(r)?' fut':'')+'" data-d="'+ds+'" title="'+ds+' '+nm(t)+' '+mm+tag(r)+'（点击跳到上下午分段）" style="height:'+Math.round(cs)+'px;background:'+C[t][0]+'40">'+
+        '<div style="display:flex;align-items:center;justify-content:center;width:'+Math.round(cs)+'px;height:'+Math.round(cs)+'px">'+svg(t,cs-2)+'</div></div>';
+    }
+    h+='<div class="mcard'+(m+1===focusMonth?' mfocus':'')+'" data-m="'+(m+1)+'" style="height:'+Math.round(cardH)+'px">'+
+      '<div class="mhd"><b>'+(m+1)+'月</b><span>'+(cnt?Math.round(sum)+'mm':'—')+'</span></div>'+
+      '<div class="mg" style="grid-template-columns:repeat(7,1fr);column-gap:'+gx.toFixed(1)+'px;row-gap:'+gy.toFixed(1)+'px;align-content:center">'+h2+'</div></div>';
+  }
+  g.innerHTML=h;
+  if(focusMonth){var mf=g.querySelector('.mfocus');if(mf&&mf.scrollIntoView)mf.scrollIntoView({block:'nearest'});}
+  g.onclick=function(e){var c=e.target.closest('.c');if(c&&c.dataset.d)goDay(c.dataset.d);};
+}
+/* 上下午：7 列按周对齐，卡片高度撑满图案区，图标上限 64px，卡片内附降水量数值 */
+function rAm(W,H){
+  var g=document.getElementById('gAm'), n=daysIn(year,month);
+  var first=new Date(year,month-1,1).getDay(), off=(first+6)%7;
+  var rows=Math.max(1,Math.ceil((off+n)/7)), gap=6;
+  var cw=(W-6*gap)/7, chh=(H-(rows-1)*gap)/rows;
+  var s=Math.max(10,Math.min((cw-14)/2.35, chh*0.44, 64));
+  var showNum=chh>=92;
+  var today=ymd(new Date()), h='';
+  for(var k=0;k<off;k++)h+='<div></div>';
+  for(var dd=1;dd<=n;dd++){
+    var ds=year+'-'+pad(month)+'-'+pad(dd), r=rec(ds), r2=new Date(year,month-1,dd);
+    var ta=tp(r,'am'), tpm=tp(r,'pm');
+    var ma=(r.am==null)?'—':(Math.round(r.am*10)/10);
+    var mp=(r.pm==null)?'—':(Math.round(r.pm*10)/10);
+    var la=ds+' 上午 '+nm(ta)+' '+ma+'mm'+tagAM(r);
+    var lp=ds+' 下午 '+nm(tpm)+' '+mp+'mm'+tagPM(r);
+    var fa=(r.pAM&&r.am!=null), fp=(r.pPM&&r.pm!=null);
+    var fst='outline:1.5px dashed #b0aea2;outline-offset:-1px;opacity:.62;';
+    h+='<div class="acell'+(ds===focusDay?' dfocus':(ds===today?' today':''))+'" data-d="'+ds+'" style="width:'+Math.round(cw)+'px;height:'+Math.round(chh)+'px;justify-content:center;gap:2px">'+
+      '<div class="aday">'+dd+' 周'+WD[r2.getDay()]+'</div>'+
+      '<div class="arow">'+
+        '<div title="'+la+'" style="background:'+C[ta][0]+'40;border-radius:4px;padding:2px;line-height:0;'+(fa?fst:'')+'">'+svg(ta,s)+'</div>'+
+        '<div title="'+lp+'" style="background:'+C[tpm][0]+'40;border-radius:4px;padding:2px;line-height:0;'+(fp?fst:'')+'">'+svg(tpm,s)+'</div>'+
+      '</div>'+
+      (showNum?'<div style="display:flex;gap:6px;font-size:10px;color:var(--tx3);font-variant-numeric:tabular-nums"><span>'+ma+'</span><span>'+mp+'</span></div>':'')+
+      '</div>';
+  }
+  g.style.gridTemplateColumns='repeat(7,'+Math.round(cw)+'px)';
+  g.style.gap=gap+'px';
+  g.innerHTML=h;
+  if(focusDay){var fd=g.querySelector('.dfocus');if(fd&&fd.scrollIntoView)fd.scrollIntoView({block:'nearest'});}
+  g.onclick=function(e){var c=e.target.closest('.acell');if(c&&c.dataset.d)openDlg(c.dataset.d);};
+}
+/* 场景决策：今天 + 未来三天，按场景阈值给出 可作业 / 有条件 / 建议停 结论 */
+function shalfHTML(mm,t,v,halfName,futHalf){
+  var ic=(t==='none')?'':svg(t,24);
+  return '<div class="shalf '+v.level+'">'+
+    '<div class="sicon">'+ic+'<b>'+halfName+' · '+LVTXT[v.level]+'</b></div>'+
+    '<i>'+v.txt+'</i></div>';
+}
+function rScene(W,H){
+  var g=document.getElementById('gSc'), scene=document.getElementById('scn').value;
+  var now=new Date(), today=ymd(now);
+  var st=sceneStat(scene);
+  var gap=8, rowH=Math.max(86,Math.floor((H-34-3*gap)/4));
+  var h='<div class="sstat" style="margin:0 0 4px 2px">'+
+    '<span>'+month+' 月实测：<b class="bad">'+st.stop+'</b> 个半天建议停</span>'+
+    '<span><b class="half">'+st.watch+'</b> 个半天有条件</span>'+
+    '<span style="color:var(--tx3)">可用于排期对账与保险佐证 · 阈值在脚本 SCENES 处按客户规程调整</span></div>';
+  for(var k=0;k<4;k++){
+    var dt=new Date(now.getFullYear(),now.getMonth(),now.getDate()+k);
+    var ds=ymd(dt), r=rec(ds), fut=isFut(r);
+    var lbl=k===0?'今天':(k===1?'明天':(k===2?'后天':'大后天'));
+    h+='<div class="srow'+(ds===today?' today':'')+(fut?' fut':'')+'" style="height:'+rowH+'px">'+
+      '<div class="srowtop"><span class="sdate">'+lbl+' · '+ds.slice(5)+' 周'+WD[dt.getDay()]+'</span>'+
+      (fut?'<span class="swk">预报 · 虚线</span>':'<span class="swk">实测</span>')+'</div>'+
+      '<div class="shalves">'+
+        shalfHTML(r.am,tp(r,'am'),verdict(r.am,scene),'上午',fut&&r.pAM)+
+        shalfHTML(r.pm,tp(r,'pm'),verdict(r.pm,scene),'下午',fut&&r.pPM)+
+      '</div></div>';
+  }
+  g.style.display='flex';g.style.flexDirection='column';g.style.gap=gap+'px';
+  g.innerHTML=h;
+  g.onclick=null;
+}
+function rStat(){
+  var st=statData();
+  var el=document.getElementById('stat');
+  el.innerHTML='<span>累计降水<b>'+st.tot+'</b> mm</span>'+
+    '<span>雨日<b>'+st.wet+'</b> 天</span>'+
+    '<span>最大单日<b>'+st.max+'</b> mm</span>'+
+    '<span>暴雨及以上<b>'+st.storm+'</b> 天</span>'+
+    '<span>已记录<b>'+st.n+'</b> 天</span>'+
+    '<span style="margin-left:auto;color:var(--tx3)">文件名 <b style="font-size:12px;font-weight:500;color:var(--tx2)">'+fileName()+'.html</b></span>';
+  document.getElementById('sch').textContent=nextSched();
+}
+function rLegend(){
+  var h='';
+  LEG.forEach(function(o){h+='<div class="lgi">'+svg(o[0],15)+'<span class="nm">'+o[1]+'</span><span class="vl">'+o[2]+'</span></div>';});
+  h+='<div class="lgi"><span class="fdemo"></span><span class="nm">预报</span><span class="vl">未来3天 · 每日自动更正为实测</span></div>';
+  document.getElementById('lg').innerHTML=h;
+  document.getElementById('note').innerHTML=
+    '判定规则：取该时段逐小时降水量求和，按 GB/T 28592-2012 映射等级；无降水（&lt;0.1mm）时按该时段平均云量判晴 / 多云 / 阴。'+
+    '上午 05:00-12:00、下午 12:00-21:00、日值为自然日 00-24 时累计。'+
+    '预报与更正：未来三天为数值预报（虚线显示）；时间一到即被逐时实测覆盖，每次打开 / 每 30 分钟自动重取近 7 天，保证过去的日子始终是真实天气。'+
+    '自动记录：页面在 12:00 与 21:00 前后处于开启状态时自动落库；未开启则下次打开时按历史逐时数据自愈补录。'+
+    '跳转：年度视图点月份标签 → 月度视图该月；年度或月度视图点某天 → 上下午分段该日。'+
+    '场景决策（订阅功能）：按所选行业的作业阈值，把上午 / 下午的降水量翻译成 可作业 / 有条件 / 建议停；并统计本月因雨建议停与有条件的半天数，供排期对账与保险佐证。阈值为行业常见规程值，B 端定制时在脚本 SCENES 处按客户实际规程调整。'+
+    '官方校订：在上下午分段视图点击某日，可填入中国气象局 / 重庆气象局通报值，填入后优先显示。'+
+    '定位：首次打开自动定位一次，浏览器定位失败时改按 IP 定位；点「重新定位」可随时切换城市。'+
+    '天气数据按地点分开保存，切换城市不会串用上一个地方的记录。'+
+    '文件名按定位自动生成（省 + 市 + 区县），浏览器无法改写磁盘原文件名，可用「另存为」导出同名副本。'+
+    '数据底本为 Open-Meteo 数值再分析（ECMWF / ICON），非官方发布值，仅供记录参考。';
+}
+
+/* ==================================================================
+   导出与分享：用 Canvas 按同一套图标几何 / 同一套配色重绘一遍，
+   保证 PNG / PDF / 分享长图与屏幕所见完全一致。
+   ================================================================== */
+var INK='#2c2c2a',INK2='#5f5e5a',INK3='#888780',LINE='#e3e2dd',BG2='#f7f7f5',TODAY='#D85A30';
+var CLOUD_D='M4.3 11.4a2.6 2.6 0 0 1 .3-5.2 3.4 3.4 0 0 1 6.6-.6 2.4 2.4 0 0 1-.3 5.8z';
+/* 雨线几何与 svg() 中的 <line> 完全一一对应：[x1,y1,x2,y2,线宽] */
+var RAIN={
+ light:[[6.4,12.2,5.7,15.0,1.1]],
+ mod:[[5,12.2,4.3,15.2,1.1],[8,12.2,7.3,15.2,1.1],[11,12.2,10.3,15.2,1.1]],
+ heavy:[[4.5,12.2,3.7,15.6,1.25],[7.2,12.2,6.4,15.6,1.25],[9.9,12.2,9.1,15.6,1.25],[12.6,12.2,11.8,15.6,1.25]],
+ storm:[[4.4,12.2,3.4,15.7,1.35],[6.1,12.2,5.2,15.7,1.35],[7.8,12.2,6.9,15.7,1.35],[9.5,12.2,8.6,15.7,1.35],
+        [11.2,12.2,10.3,15.7,1.35],[12.9,12.2,12.0,15.7,1.35],[6.95,12.2,6.95,15.7,1.35],[10.35,12.2,10.35,15.7,1.35]],
+ dstorm:[[4.2,12.2,3.1,15.8,1.45],[5.8,12.2,4.7,15.8,1.45],[7.4,12.2,6.3,15.8,1.45],[9.0,12.2,7.9,15.8,1.45],
+         [10.6,12.2,9.5,15.8,1.45],[12.2,12.2,11.1,15.8,1.45],[13.8,12.2,12.7,15.8,1.45],
+         [6.6,12.2,6.6,15.8,1.45],[9.8,12.2,9.8,15.8,1.45]]
+};
+var TAU=Math.PI*2;
+/* 头像 logo（base64 内嵌，导出图右上角圆形呈现；file:// 与导出画布同源，不会污染画布） */
+var LOGO_DATA='data:image/jpeg;base64,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';
+var LOGO_IMG=(typeof Image!=='undefined')?new Image():null;
+if(LOGO_IMG)LOGO_IMG.src=LOGO_DATA;
+function rr(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  if(ctx.roundRect){ctx.roundRect(x,y,w,h,r);return;}
+  r=Math.min(r,w/2,h/2);
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+function font(ctx,wt,px){ctx.font=wt+' '+px+'px "PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif';}
+/* 与 svg(t,s) 同源的 Canvas 版图标 */
+function cIcon(ctx,t,x,y,s){
+  var c=C[t]||C.none,k=s/16;
+  ctx.save();ctx.translate(x,y);ctx.scale(k,k);
+  ctx.lineCap='round';ctx.lineJoin='round';
+  if(t==='sun'){
+    ctx.beginPath();ctx.fillStyle=c[0];ctx.arc(8,8,3,0,TAU);ctx.fill();
+    ctx.strokeStyle=c[1];ctx.lineWidth=0.95;ctx.beginPath();
+    var R=[[8,1.2,8,2.9],[8,13.1,8,14.8],[1.2,8,2.9,8],[13.1,8,14.8,8],
+           [3.2,3.2,4.4,4.4],[11.6,11.6,12.8,12.8],[12.8,3.2,11.6,4.4],[4.4,11.6,3.2,12.8]];
+    for(var i=0;i<R.length;i++){ctx.moveTo(R[i][0],R[i][1]);ctx.lineTo(R[i][2],R[i][3]);}
+    ctx.stroke();
+  }else if(t==='none'){
+    ctx.setLineDash([2,1.6]);
+    rr(ctx,1.6,1.6,12.8,12.8,2);ctx.fillStyle=c[0];ctx.fill();
+    ctx.strokeStyle=c[1];ctx.lineWidth=0.7;ctx.stroke();ctx.setLineDash([]);
+  }else{
+    var p=new Path2D(CLOUD_D);
+    ctx.fillStyle=c[0];ctx.fill(p);ctx.strokeStyle=c[1];ctx.lineWidth=0.8;ctx.stroke(p);
+    if(t==='over'){
+      ctx.fillStyle=c[1];
+      [[6.1,9.2],[9.7,8.3],[8,10.5]].forEach(function(d){ctx.beginPath();ctx.arc(d[0],d[1],0.5,0,TAU);ctx.fill();});
+    }
+    var L=RAIN[t];
+    if(L)for(var j=0;j<L.length;j++){
+      ctx.beginPath();ctx.strokeStyle=c[1];ctx.lineWidth=L[j][4];
+      ctx.moveTo(L[j][0],L[j][1]);ctx.lineTo(L[j][2],L[j][3]);ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+/* 统计口径与 rStat 完全一致（只统计不超过今天的日期） */
+function statData(){
+  var f=cur().years[String(year)]||{}, today=ymd(new Date());
+  var ks=Object.keys(f).filter(function(k){return k<=today;});
+  var tot=0,wet=0,max=0,storm=0;
+  ks.forEach(function(k){
+    var o=cur().official[k], v=(o&&o.day!=null)?o.day:f[k].day;
+    if(v==null)return;
+    tot+=v; if(v>=0.1)wet++; if(v>max)max=v; if(v>=50)storm++;
+  });
+  return {tot:Math.round(tot),wet:wet,max:Math.round(max*10)/10,storm:storm,n:ks.length};
+}
+function monSum(m){
+  var f=cur().years[String(year)]||{}, today=ymd(new Date()), s=0, n=daysIn(year,m);
+  for(var d=1;d<=n;d++){
+    var ds=year+'-'+pad(m)+'-'+pad(d); if(ds>today)continue;
+    var o=cur().official[ds], v=(o&&o.day!=null)?o.day:(f[ds]?f[ds].day:null);
+    if(v!=null)s+=v;
+  }
+  return s;
+}
+function yearGeom(w,h,sc){
+  var LW=Math.round(46*sc),HD=Math.round(18*sc),GAP=Math.max(1,Math.round(2*sc));
+  var s=Math.max(5,Math.min((w-LW-30*GAP)/31,(h-HD)/12));
+  var gy=clamp((h-HD-12*s)/11,1.5,22*sc);
+  return {LW:LW,HD:HD,GAP:GAP,s:s,gy:gy};
+}
+/* 年度：12 行 × 31 列 + 顶部日刻度，与 rYear 同构 */
+function dYear(ctx,x,y,w,h,sc){
+  var g=yearGeom(w,h,sc), LW=g.LW,HD=g.HD,GAP=g.GAP,s=g.s,gy=g.gy;
+  var step=s<14*sc?5:(s<20*sc?2:1), today=ymd(new Date());
+  ctx.textAlign='center';ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(9.5*sc)));
+  for(var i=1;i<=31;i++){
+    if(i===1||i===31||i%step===0)ctx.fillText(i,x+LW+i*GAP+(i-1)*s+s/2,y);
+  }
+  var ty=y+HD;
+  for(var m=0;m<12;m++){
+    var n=daysIn(year,m+1), ry=ty+m*(s+gy);
+    ctx.textAlign='right';ctx.fillStyle=INK2;font(ctx,600,Math.max(8,Math.round(11*sc)));
+    ctx.fillText((m+1)+'月',x+LW-Math.round(7*sc),ry+s/2-Math.round(6*sc));
+    for(var dd=1;dd<=n;dd++){
+      var ds=year+'-'+pad(m+1)+'-'+pad(dd), r=rec(ds), t=tp(r,'day');
+      var cx=x+LW+dd*GAP+(dd-1)*s;
+      ctx.fillStyle=C[t][0]+'40';rr(ctx,cx,ry,s,s,Math.max(1,Math.round(3*sc)));ctx.fill();
+      if(isFut(r)){
+        ctx.setLineDash([3*sc,2.4*sc]);ctx.strokeStyle='#b0aea2';ctx.lineWidth=Math.max(1,1.2*sc);
+        rr(ctx,cx+0.5*sc,ry+0.5*sc,s-1*sc,s-1*sc,Math.round(3*sc));ctx.stroke();ctx.setLineDash([]);
+      }
+      ctx.globalAlpha=isFut(r)?0.62:1;
+      cIcon(ctx,t,cx+Math.round(1.5*sc),ry+Math.round(1.5*sc),s-Math.round(3*sc));
+      ctx.globalAlpha=1;
+      if(ds===today){ctx.strokeStyle=TODAY;ctx.lineWidth=Math.max(1,1.6*sc);rr(ctx,cx-1*sc,ry-1*sc,s+2*sc,s+2*sc,Math.round(3*sc));ctx.stroke();}
+    }
+  }
+  ctx.textAlign='left';
+}
+/* 月度：12 张月历卡，列数试算与 rMon 同策 */
+function dMon(ctx,x,y,w,h,sc){
+  var gap=Math.round(10*sc), best=null;
+  [2,3,4,5,6].forEach(function(cols){
+    var rows=Math.ceil(12/cols);
+    var cardH=(h-(rows-1)*gap)/rows, cardW=(w-(cols-1)*gap)/cols;
+    var innerH=cardH-Math.round(28*sc), innerW=cardW-Math.round(14*sc);
+    var cs=Math.max(6,Math.min((innerW-Math.round(12*sc))/7,(innerH-Math.round(10*sc))/6));
+    var fill=Math.min(1,(6*cs+Math.round(12*sc))/innerH);
+    var score=cs*(0.35+0.65*fill);
+    if(!best||score>best.score)best={cols:cols,rows:rows,cardH:cardH,cardW:cardW,cs:cs,score:score};
+  });
+  var cols=best.cols, cardH=best.cardH, cardW=best.cardW, cs=best.cs;
+  var today=ymd(new Date());
+  for(var m=0;m<12;m++){
+    var cxx=x+(m%cols)*(cardW+gap), cyy=y+Math.floor(m/cols)*(cardH+gap);
+    ctx.fillStyle=BG2;rr(ctx,cxx,cyy,cardW,cardH,Math.round(8*sc));ctx.fill();
+    ctx.strokeStyle=LINE;ctx.lineWidth=1;ctx.stroke();
+    var sm=monSum(m+1);
+    ctx.textAlign='left';ctx.fillStyle=INK;font(ctx,700,Math.max(8,Math.round(12*sc)));
+    ctx.fillText((m+1)+'月',cxx+Math.round(7*sc),cyy+Math.round(6*sc));
+    ctx.textAlign='right';ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(10.5*sc)));
+    ctx.fillText(sm?Math.round(sm)+'mm':'—',cxx+cardW-Math.round(7*sc),cyy+Math.round(7*sc));
+    var n=daysIn(year,m+1), off=(new Date(year,m,0).getDay()+6)%7;
+    var gy=clamp((cardH-Math.round(28*sc)-6*cs)/5,1.5,10*sc), gx=clamp((cardW-Math.round(14*sc)-7*cs)/6,1.5,10*sc);
+    var ox=cxx+Math.round(7*sc), oy=cyy+Math.round(24*sc);
+    ctx.textAlign='center';ctx.fillStyle=INK3;font(ctx,400,Math.max(6,Math.round(8*sc)));
+    for(var wd=0;wd<7;wd++)ctx.fillText('一二三四五六日'.charAt(wd),ox+wd*(cs+gx)+cs/2,oy-Math.round(2*sc));
+    oy+=Math.round(11*sc);
+    for(var dd=1;dd<=n;dd++){
+      var k=off+dd-1, rx=k%7, ry2=Math.floor(k/7);
+      var ds=year+'-'+pad(m+1)+'-'+pad(dd), r=rec(ds), t=tp(r,'day');
+      var px=ox+rx*(cs+gx), py=oy+ry2*(cs+gy);
+      ctx.fillStyle=C[t][0]+'40';rr(ctx,px,py,cs,cs,Math.max(1,Math.round(2*sc)));ctx.fill();
+      if(isFut(r)){
+        ctx.setLineDash([2.6*sc,2.1*sc]);ctx.strokeStyle='#b0aea2';ctx.lineWidth=Math.max(1,1.1*sc);
+        rr(ctx,px+0.5*sc,py+0.5*sc,cs-1*sc,cs-1*sc,Math.round(2*sc));ctx.stroke();ctx.setLineDash([]);
+      }
+      ctx.globalAlpha=isFut(r)?0.62:1;
+      cIcon(ctx,t,px+Math.round(1*sc),py+Math.round(1*sc),cs-Math.round(2*sc));
+      ctx.globalAlpha=1;
+      if(ds===today){ctx.strokeStyle=TODAY;ctx.lineWidth=Math.max(1,1.4*sc);rr(ctx,px-1*sc,py-1*sc,cs+2*sc,cs+2*sc,Math.round(2*sc));ctx.stroke();}
+    }
+  }
+  ctx.textAlign='left';
+}
+/* 上下午：7 列按周对齐，格内两个图标（上午 / 下午） */
+function dAm(ctx,x,y,w,h,sc){
+  var n=daysIn(year,month), off=(new Date(year,month-1,1).getDay()+6)%7;
+  var rows=Math.max(1,Math.ceil((off+n)/7)), gap=Math.round(6*sc);
+  var cw=(w-6*gap)/7, chh=(h-(rows-1)*gap)/rows;
+  var s=Math.max(8,Math.min((cw-Math.round(16*sc))/2.35,chh*0.44,64*sc));
+  var showNum=chh>=92*sc, today=ymd(new Date());
+  for(var dd=1;dd<=n;dd++){
+    var k=off+dd-1, cx=x+(k%7)*(cw+gap), cy=y+Math.floor(k/7)*(chh+gap);
+    var ds=year+'-'+pad(month)+'-'+pad(dd), r=rec(ds);
+    ctx.fillStyle=BG2;rr(ctx,cx,cy,cw,chh,Math.round(7*sc));ctx.fill();
+    ctx.strokeStyle=(ds===today)?TODAY:LINE;
+    ctx.lineWidth=(ds===today)?Math.max(1,1.6*sc):1;ctx.stroke();
+    var ta=tp(r,'am'), tpm=tp(r,'pm');
+    ctx.textAlign='center';ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(9.5*sc)));
+    ctx.fillText(dd+' 周'+WD[new Date(year,month-1,dd).getDay()],cx+cw/2,cy+Math.round(5*sc));
+    var iw=s+Math.round(6*sc), tot=2*iw, sx=cx+(cw-tot)/2;
+    var iy=cy+Math.round(19*sc);
+    var fa=(r.pAM&&r.am!=null), fp=(r.pPM&&r.pm!=null);
+    ctx.fillStyle=C[ta][0]+'40';rr(ctx,sx,iy,s,s,Math.round(4*sc));ctx.fill();
+    if(fa){ctx.setLineDash([3*sc,2.4*sc]);ctx.strokeStyle='#b0aea2';ctx.lineWidth=Math.max(1,1.1*sc);rr(ctx,sx+0.5*sc,iy+0.5*sc,s-1*sc,s-1*sc,Math.round(4*sc));ctx.stroke();ctx.setLineDash([]);}
+    ctx.globalAlpha=fa?0.62:1;
+    cIcon(ctx,ta,sx+Math.round(1.5*sc),iy+Math.round(1.5*sc),s-Math.round(3*sc));
+    ctx.globalAlpha=1;
+    ctx.fillStyle=C[tpm][0]+'40';rr(ctx,sx+iw,iy,s,s,Math.round(4*sc));ctx.fill();
+    if(fp){ctx.setLineDash([3*sc,2.4*sc]);ctx.strokeStyle='#b0aea2';ctx.lineWidth=Math.max(1,1.1*sc);rr(ctx,sx+iw+0.5*sc,iy+0.5*sc,s-1*sc,s-1*sc,Math.round(4*sc));ctx.stroke();ctx.setLineDash([]);}
+    ctx.globalAlpha=fp?0.62:1;
+    cIcon(ctx,tpm,sx+iw+Math.round(1.5*sc),iy+Math.round(1.5*sc),s-Math.round(3*sc));
+    ctx.globalAlpha=1;
+    if(showNum){
+      ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(9.5*sc)));
+      ctx.fillText((r.am==null?'—':Math.round(r.am*10)/10)+' / '+(r.pm==null?'—':Math.round(r.pm*10)/10)+' mm',cx+cw/2,iy+s+Math.round(6*sc));
+    }
+  }
+  ctx.textAlign='left';
+}
+/* 各月降水量柱状图，用于填充分享长图与 PDF 的剩余空间 */
+function dBars(ctx,x,y,w,h,sc){
+  var n=12, gap=Math.round(6*sc), bw=(w-(n-1)*gap)/n, vals=[], mx=1;
+  for(var m=0;m<12;m++){var v=monSum(m+1);vals.push(v);if(v>mx)mx=v;}
+  ctx.textAlign='left';ctx.fillStyle=INK2;font(ctx,600,Math.max(8,Math.round(12*sc)));
+  ctx.fillText('各月降水量（mm）',x,y);
+  var top=y+Math.round(20*sc), bh=Math.max(10,h-Math.round(36*sc));
+  ctx.textAlign='center';
+  for(var i=0;i<n;i++){
+    var bhh=Math.max(1,bh*vals[i]/mx), bx=x+i*(bw+gap), by=top+bh-bhh;
+    ctx.fillStyle=C.mod[0];rr(ctx,bx,by,bw,bhh,Math.max(1,Math.round(2*sc)));ctx.fill();
+    if(bhh>16*sc){
+      ctx.fillStyle='#fff';font(ctx,700,Math.max(7,Math.round(9.5*sc)));
+      ctx.fillText(Math.round(vals[i]),bx+bw/2,by+Math.round(4*sc));
+    }
+    ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(9.5*sc)));
+    ctx.fillText((i+1)+'月',bx+bw/2,top+bh+Math.round(4*sc));
+  }
+  ctx.textAlign='left';
+}
+/* 图例：先量宽再换行，避免溢出 */
+function legRows(ctx,w,sc){
+  var isz=Math.round(17*sc), rows=[], cur=[], cw=0;
+  font(ctx,400,Math.max(7,Math.round(10.5*sc)));
+  for(var i=0;i<LEG.length;i++){
+    var tw=ctx.measureText(LEG[i][1]).width+ctx.measureText(' '+LEG[i][2]).width;
+    var iw=isz+Math.round(5*sc)+tw+Math.round(16*sc);
+    if(cur.length&&cw+iw>w){rows.push({items:cur,w:cw});cur=[];cw=0;}
+    cur.push({i:i,w:iw});cw+=iw;
+  }
+  if(cur.length)rows.push({items:cur,w:cw});
+  return {rows:rows,isz:isz};
+}
+function dLegend(ctx,x,y,w,sc){
+  var L=legRows(ctx,w,sc), ly=y;
+  for(var r=0;r<L.rows.length;r++){
+    var lx=x;
+    for(var j=0;j<L.rows[r].items.length;j++){
+      var o=LEG[L.rows[r].items[j].i];
+      cIcon(ctx,o[0],lx,ly,L.isz);
+      var tx=lx+L.isz+Math.round(5*sc);
+      ctx.fillStyle=INK;font(ctx,600,Math.max(7,Math.round(10.5*sc)));ctx.textAlign='left';
+      ctx.fillText(o[1],tx,ly+Math.round(3*sc));
+      var w1=ctx.measureText(o[1]).width;
+      ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(10*sc)));
+      ctx.fillText(o[2],tx+w1+Math.round(4*sc),ly+Math.round(3.5*sc));
+      lx+=L.rows[r].items[j].w;
+    }
+    ly+=Math.round(22*sc);
+  }
+  return ly-y;
+}
+/* 场景决策（Canvas，与屏幕 rScene 同构） */
+var LV={ok:['#e8f3e4','#3c7a2e'],watch:['#fdf3df','#a06a12'],stop:['#fbe9e7','#b3402e'],none:['#f7f7f5','#888780']};
+function dHalf(ctx,x,y,w,h,mm,t,v,name,sc,futHalf){
+  var lv=LV[v.level]||LV.none;
+  ctx.fillStyle=lv[0];rr(ctx,x,y,w,h,Math.round(5*sc));ctx.fill();
+  ctx.globalAlpha=futHalf?0.62:1;
+  var isz=Math.round(22*sc), pad=Math.round(8*sc), tx=x+pad+isz+Math.round(7*sc);
+  if(t!=='none')cIcon(ctx,t,x+pad,y+(h-isz)/2,isz);
+  ctx.fillStyle=lv[1];font(ctx,700,Math.max(8,Math.round(11.5*sc)));ctx.textAlign='left';
+  ctx.fillText(name+' · '+LVTXT[v.level],tx,y+Math.round(5*sc));
+  ctx.fillStyle=INK2;font(ctx,400,Math.max(7,Math.round(10*sc)));
+  ctx.fillText(v.txt,tx,y+Math.round(21*sc));
+  ctx.globalAlpha=1;
+}
+function dScene(ctx,x,y,w,h,sc){
+  var scene=(document.getElementById('scn')||{value:'通用参考'}).value||'通用参考';
+  var now=new Date(), gap=Math.round(8*sc);
+  var rowH=Math.floor((h-gap*3)/4), isz=Math.round(22*sc);
+  for(var k=0;k<4;k++){
+    var dt=new Date(now.getFullYear(),now.getMonth(),now.getDate()+k);
+    var ds=ymd(dt), r=rec(ds), fut=isFut(r);
+    var ry=y+k*(rowH+gap);
+    if(k===0){ctx.fillStyle='#D85A30';ctx.globalAlpha=0.08;rr(ctx,x,ry,w,rowH,Math.round(6*sc));ctx.fill();ctx.globalAlpha=1;}
+    ctx.strokeStyle=k===0?'#D85A30':LINE;ctx.lineWidth=k===0?1.4:1;
+    if(fut)ctx.setLineDash([3*sc,2.4*sc]);
+    rr(ctx,x+0.5,ry+0.5,w-1,rowH-1,Math.round(6*sc));ctx.stroke();ctx.setLineDash([]);
+    var lbl=k===0?'今天':(k===1?'明天':(k===2?'后天':'大后天'));
+    ctx.fillStyle=INK;font(ctx,600,Math.round(13*sc));ctx.textAlign='left';ctx.textBaseline='top';
+    ctx.fillText(lbl+' · '+ds.slice(5)+' 周'+WD[dt.getDay()],x+Math.round(12*sc),ry+Math.round(8*sc));
+    if(fut){ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(10*sc)));ctx.fillText('预报 · 虚线',x+w-Math.round(70*sc),ry+Math.round(10*sc));}
+    var cy2=ry+Math.round(28*sc), ch2=rowH-Math.round(36*sc);
+    var cw2=(w-Math.round(24*sc)-Math.round(10*sc))/2;
+    if(ch2>isz+Math.round(10*sc)){
+      dHalf(ctx,x+Math.round(12*sc),cy2,cw2,ch2,r.am,tp(r,'am'),verdict(r.am,scene),'上午',sc,fut&&r.pAM);
+      dHalf(ctx,x+Math.round(12*sc)+cw2+Math.round(10*sc),cy2,cw2,ch2,r.pm,tp(r,'pm'),verdict(r.pm,scene),'下午',sc,fut&&r.pPM);
+    }
+  }
+}
+/* 整张纸 / 整张分享图 */
+function drawSheet(ctx,W,H,o){
+  o=o||{};
+  var mode=(o.mode==null?curTab:o.mode);
+  var sc=W/1240, M=Math.round(44*sc);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  ctx.textBaseline='top';ctx.textAlign='left';
+  var y=M, d=new Date();
+  /* 右上角圆形 logo（同源 data URI，不污染画布） */
+  if(LOGO_IMG&&LOGO_IMG.complete&&LOGO_IMG.naturalWidth){
+    var ls=Math.round(52*sc), lx=W-M-ls, ly=M-Math.round(4*sc);
+    ctx.save();ctx.beginPath();ctx.arc(lx+ls/2,ly+ls/2,ls/2,0,TAU);ctx.clip();
+    ctx.drawImage(LOGO_IMG,lx,ly,ls,ls);ctx.restore();
+    ctx.strokeStyle='#d3d1c7';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(lx+ls/2,ly+ls/2,ls/2,0,TAU);ctx.stroke();
+  }
+  ctx.fillStyle=INK;font(ctx,700,Math.round(30*sc));
+  ctx.fillText(placeTitle()+' · '+APP_NAME,M,y);
+  y+=Math.round(36*sc);
+  ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(12.5*sc)));
+  ctx.fillText(LAT.toFixed(2)+'°N '+LON.toFixed(2)+'°E · GB/T 28592-2012 降水量等级 · 生成于 '+ymd(d)+' '+pad(d.getHours())+':'+pad(d.getMinutes()),M,y);
+  y+=Math.round(24*sc);
+  var scnN=(document.getElementById('scn')||{value:'通用参考'}).value||'通用参考';
+  ctx.fillStyle=INK2;font(ctx,600,Math.max(8,Math.round(14*sc)));
+  ctx.fillText(['年度视图 '+year+' 年 · 逐日天气图案','月度视图 '+year+' 年 · 12 个月日历','上下午分段 '+year+' 年 '+month+' 月 · 上午 05-12 时 / 下午 12-21 时','场景决策 · '+scnN+' · 今天与未来三天可作业判定'][mode],M,y);
+  y+=Math.round(24*sc);
+  var st=statData();
+  var items=[['累计降水',st.tot+' mm'],['雨日',st.wet+' 天'],['最大单日',st.max+' mm'],['暴雨及以上',st.storm+' 天'],['已记录',st.n+' 天']];
+  var bw=Math.min(Math.round(150*sc),(W-2*M-4*Math.round(9*sc))/5), bh=Math.round(46*sc), gp=Math.round(9*sc);
+  for(var i=0;i<items.length;i++){
+    var bx=M+i*(bw+gp);
+    ctx.fillStyle=BG2;rr(ctx,bx,y,bw,bh,Math.round(8*sc));ctx.fill();
+    ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(10.5*sc)));
+    ctx.fillText(items[i][0],bx+Math.round(10*sc),y+Math.round(8*sc));
+    ctx.fillStyle=INK;font(ctx,700,Math.max(8,Math.round(17*sc)));
+    ctx.fillText(items[i][1],bx+Math.round(10*sc),y+Math.round(23*sc));
+  }
+  y+=bh+Math.round(20*sc);
+  var legH=Math.round(22*sc)*legRows(ctx,W-2*M,sc).rows.length+Math.round(16*sc);
+  var footH=Math.round(26*sc);
+  var ch=H-M-y-legH-footH;
+  if(ch<60)ch=60;
+  /* 年度视图：格子尺寸由宽度决定，高度富余时不再硬拉行距（会显得空），
+     而是把「网格 + 各月柱状图」整块垂直居中，柱状图按剩余高度自适应变高 */
+  var cy=y, gridH=ch, barH=0, top=cy;
+  if(mode===0){
+    var g=yearGeom(W-2*M,1e6,sc), nat=g.HD+12*g.s+11*Math.round(22*sc);
+    if(nat<ch){
+      var left=ch-nat;
+      if(left>Math.round(150*sc))barH=Math.min(Math.max(Math.round(170*sc),Math.round(ch*0.28)),left-Math.round(24*sc));
+      gridH=nat; top=cy+(ch-nat-barH)/2;
+    }
+  }
+  if(mode===0)dYear(ctx,M,top,W-2*M,gridH,sc);
+  else if(mode===1)dMon(ctx,M,cy,W-2*M,ch,sc);
+  else if(mode===2)dAm(ctx,M,cy,W-2*M,ch,sc);
+  else dScene(ctx,M,cy,W-2*M,ch,sc);
+  if(barH>0)dBars(ctx,M,top+gridH+Math.round(20*sc),W-2*M,barH-Math.round(24*sc),sc);
+  var ly=H-M-footH-legH+Math.round(8*sc);
+  ctx.strokeStyle=LINE;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(M,ly-Math.round(10*sc));ctx.lineTo(W-M,ly-Math.round(10*sc));ctx.stroke();
+  dLegend(ctx,M,ly,W-2*M,sc);
+  ctx.fillStyle=INK3;font(ctx,400,Math.max(7,Math.round(10*sc)));
+  ctx.fillText((BRAND||APP_IP)+' · 天气底本：Open-Meteo 数值再分析（ECMWF / ICON），非官方发布值；虚线为未来三天预报，时间一到自动更正为实测。',M,H-M-Math.round(14*sc));
+}
+function buildSheet(mode,W,H){
+  var c=document.createElement('canvas');c.width=W;c.height=H;
+  drawSheet(c.getContext('2d'),W,H,{mode:mode});
+  return c;
+}
+function dl(blob,name){
+  var u=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(u);},5000);
+}
+/* 手写一个最小 PDF：一页，内嵌一张 JPEG（/DCTDecode），A4 尺寸按 pt 给定 */
+function pdfFromJPEG(dataURL,wpt,hpt,iw,ih){
+  var bin=atob(dataURL.split(',')[1]);
+  var ct='q '+wpt.toFixed(2)+' 0 0 '+hpt.toFixed(2)+' 0 0 cm /Im0 Do Q';
+  var objs=[];
+  objs[1]='<< /Type /Catalog /Pages 2 0 R >>';
+  objs[2]='<< /Type /Pages /Kids [3 0 R] /Count 1 >>';
+  objs[3]='<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+wpt.toFixed(2)+' '+hpt.toFixed(2)+'] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>';
+  objs[4]='<< /Type /XObject /Subtype /Image /Width '+iw+' /Height '+ih+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+bin.length+' >>\nstream\n'+bin+'\nendstream';
+  objs[5]='<< /Length '+ct.length+' >>\nstream\n'+ct+'\nendstream';
+  var out='%PDF-1.4\n%\xE2\xE3\xCF\xD3\n', off=[], p=out.length;
+  for(var i=1;i<=5;i++){
+    off[i]=p;
+    var s=i+' 0 obj\n'+objs[i]+'\nendobj\n';
+    out+=s;p+=s.length;
+  }
+  var xr=p, x='xref\n0 6\n0000000000 65535 f \n';
+  for(var j=1;j<=5;j++){var o=String(off[j]);while(o.length<10)o='0'+o;x+=o+' 00000 n \n';}
+  out+=x+'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+xr+'\n%%EOF\n';
+  var u8=new Uint8Array(out.length);
+  for(var k=0;k<out.length;k++)u8[k]=out.charCodeAt(k)&0xff;
+  return new Blob([u8],{type:'application/pdf'});
+}
+/* ============ 导出对话框 ============ */
+function exMode(){return +document.getElementById('exMode').value;}
+function expSize(){
+  var p=document.getElementById('exPaper').value, dpi=+document.getElementById('exDpi').value;
+  var pw=p==='L'?841.89:595.28, ph=p==='L'?595.28:841.89;
+  return {W:Math.round(pw/72*dpi),H:Math.round(ph/72*dpi),pw:pw,ph:ph};
+}
+function openEx(){
+  var s=document.getElementById('exMode'), scn=document.getElementById('scn');
+  var v=['年度视图','月度视图','上下午分段（'+month+'月）','场景决策 · '+((scn&&scn.value)||'通用参考')];
+  s.innerHTML='';
+  for(var i=0;i<4;i++)s.innerHTML+='<option value="'+i+'"'+(i===curTab?' selected':'')+'>'+v[i]+'</option>';
+  s.value=curTab;
+  document.getElementById('exDlg').className='dlg on';
+  exPrev();
+}
+function closeEx(){document.getElementById('exDlg').className='dlg';}
+function exPrev(){
+  var z=expSize(), pv=document.getElementById('exPrev');
+  var pw=300, ph=Math.round(300*z.H/z.W);
+  pv.width=pw;pv.height=ph;
+  var c=buildSheet(exMode(),Math.round(z.W*0.34),Math.round(z.H*0.34));
+  var cx=pv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,pw,ph);
+  cx.imageSmoothingQuality='high';cx.drawImage(c,0,0,pw,ph);
+}
+function doExp(kind){
+  if(!gate('导出 '+(kind==='png'?'PNG':'PDF')))return;
+  var m=exMode(), z=expSize();
+  var nm=fileName()+'_'+['年度','月度',month+'月上下午','场景决策'][m]+'_'+ymd(new Date());
+  try{
+    var c=buildSheet(m,z.W,z.H);
+    if(kind==='png'){
+      c.toBlob(function(b){if(b)dl(b,nm+'.png');else alert('PNG 生成失败');},'image/png');
+      toast('已导出 PNG（'+z.W+'×'+z.H+'）');
+    }else{
+      dl(pdfFromJPEG(c.toDataURL('image/jpeg',0.95),z.pw,z.ph,z.W,z.H),nm+'.pdf');
+      toast('已导出 PDF（A4 '+(z.pw>z.ph?'横向':'纵向')+'）');
+    }
+  }catch(e){alert('导出失败：'+e.message);}
+}
+function printPage(){
+  if(!gate('打印'))return;
+  var m=exMode(), z=expSize();
+  var c=buildSheet(m,Math.round(z.W*0.6),Math.round(z.H*0.6));
+  var w=window.open('','_blank');
+  if(!w){alert('浏览器拦截了弹出窗口，请直接用「导出 PDF」打印。');return;}
+  var url=c.toDataURL('image/jpeg',0.92);
+  w.document.write('<!DOCTYPE html><meta charset="utf-8"><title>'+fileName()+'</title>'+
+    '<style>html,body{margin:0;background:#fff}@page{size:A4 '+(z.pw>z.ph?'landscape':'portrait')+';margin:0}img{width:100%;display:block}</style>'+
+    '<img src="'+url+'" onload="setTimeout(function(){window.focus();window.print();},200)">');
+  w.document.close();
+}
+/* ============ 一键分享 ============ */
+var SHARE=[
+ {k:'wx',   n:'微信',     w:1080,h:1440,tip:'发给好友或群：图片已保存，微信里点「+」→ 相册选这张图'},
+ {k:'pyq',  n:'朋友圈',   w:1080,h:1440,tip:'朋友圈 3:4 最佳比例：发现 → 朋友圈 → 相机 → 从相册选择'},
+ {k:'dy',   n:'抖音',     w:1080,h:1920,tip:'抖音 9:16 竖版：发布 → 图文 → 选这张图，配文案即可'},
+ {k:'sph',  n:'视频号',   w:1080,h:1920,tip:'视频号 9:16：发表视频 → 选这张图，或作为封面'},
+ {k:'xhs',  n:'小红书',   w:1080,h:1440,tip:'小红书 3:4：发布 → 选这张图，配文案发布'}
+];
+var shKey='wx';
+function shareText(){
+  var st=statData();
+  return '【'+APP_NAME+' · '+placeTitle()+'】'+year+' 年截至 '+ymd(new Date())+'：累计降水 '+st.tot+'mm，雨日 '+st.wet+' 天，'+
+    '最大单日 '+st.max+'mm，暴雨及以上 '+st.storm+' 天，已记录 '+st.n+' 天。\n'+
+    '逐日天气图案按 GB/T 28592-2012 降水量等级绘制，上午 05-12 时、下午 12-21 时分段记录。\n#山野精灵晴雨表 #晴雨表 #天气记录 #'+strip(PL.prov)+
+    '\n'+(BRAND||APP_IP);
+}
+function openSh(){
+  var g=document.getElementById('shGrid'), h='';
+  SHARE.forEach(function(o){
+    h+='<button class="shb'+(o.k===shKey?' on':'')+'" data-k="'+o.k+'" onclick="shareTo(\''+o.k+'\')"><b>'+o.n+'</b><em>'+o.w+'×'+o.h+'</em></button>';
+  });
+  g.innerHTML=h;
+  document.getElementById('shTxt').value=shareText();
+  document.getElementById('shDlg').className='dlg on';
+  shPrev();
+}
+function closeSh(){document.getElementById('shDlg').className='dlg';}
+function shCfg(k){for(var i=0;i<SHARE.length;i++)if(SHARE[i].k===k)return SHARE[i];return SHARE[0];}
+function shPrev(){
+  var c=shCfg(shKey), pv=document.getElementById('shPrev');
+  var pw=Math.min(260,Math.round(260*c.w/c.h*1.0)), ph=Math.round(pw*c.h/c.w);
+  if(ph>340){ph=340;pw=Math.round(ph*c.w/c.h);}
+  pv.width=pw;pv.height=ph;
+  var s=buildSheet(0,Math.round(c.w*0.3),Math.round(c.h*0.3));
+  var cx=pv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,pw,ph);
+  cx.imageSmoothingQuality='high';cx.drawImage(s,0,0,pw,ph);
+  document.getElementById('shTip').textContent=shCfg(shKey).tip;
+}
+function shareTo(k){
+  if(!gate('一键分享'))return;
+  shKey=k;
+  var cfg=shCfg(k), btns=document.querySelectorAll('#shGrid .shb');
+  for(var i=0;i<btns.length;i++)btns[i].className='shb'+(btns[i].dataset.k===k?' on':'');
+  shPrev();
+  var nm=fileName()+'_'+cfg.n+'_'+ymd(new Date())+'.png';
+  var c=buildSheet(0,cfg.w,cfg.h);
+  c.toBlob(function(b){
+    if(!b){alert('分享图生成失败');return;}
+    var txt=shareText(), f=null;
+    try{f=new File([b],nm,{type:'image/png'});}catch(e){}
+    if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
+      navigator.share({files:[f],title:APP_NAME+' · '+placeTitle(),text:txt}).then(function(){
+        toast('已调起系统分享');
+      },function(e){ if(e&&e.name!=='AbortError'){dl(b,nm);copyText(txt);toast('已保存分享图并复制文案');} });
+      return;
+    }
+    dl(b,nm);copyText(txt);
+    toast('已保存 '+cfg.w+'×'+cfg.h+' 分享图，文案已复制');
+  },'image/png');
+}
+function dlShare(){
+  if(!gate('保存分享图'))return;
+  var cfg=shCfg(shKey), nm=fileName()+'_'+cfg.n+'_'+ymd(new Date())+'.png';
+  buildSheet(0,cfg.w,cfg.h).toBlob(function(b){if(b)dl(b,nm);},'image/png');
+  toast('已保存 '+cfg.w+'×'+cfg.h+' 分享图');
+}
+function sysShare(){
+  if(!gate('系统分享'))return;
+  var cfg=shCfg(shKey), nm=fileName()+'_'+cfg.n+'_'+ymd(new Date())+'.png';
+  buildSheet(0,cfg.w,cfg.h).toBlob(function(b){
+    if(!b)return;
+    var f=null;try{f=new File([b],nm,{type:'image/png'});}catch(e){}
+    if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
+      navigator.share({files:[f],title:APP_NAME+' · '+placeTitle(),text:shareText()}).catch(function(){});
+    }else if(navigator.share){
+      navigator.share({title:APP_NAME+' · '+placeTitle(),text:shareText()}).catch(function(){});
+    }else{
+      dl(b,nm);copyText(shareText());
+      toast('当前浏览器不支持系统分享，已改为保存图片并复制文案');
+    }
+  },'image/png');
+}
+function copyShare(){copyText(document.getElementById('shTxt').value||shareText());}
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){toast('文案已复制到剪贴板');},function(){fbCopy(t);});
+  }else fbCopy(t);
+}
+function fbCopy(t){
+  var ta=document.createElement('textarea');ta.value=t;
+  ta.style.position='fixed';ta.style.top='-100px';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  var ok=false;try{ok=document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+  toast(ok?'文案已复制到剪贴板':'复制失败，请手动选中文本框内容复制');
+}
+
+/* ==================================================================
+   授权与免费期
+   设计要点（务必理解后再改）：
+   1. 授权码用 ECDSA P-256 非对称签名，页面里只放「公钥」，私钥在你手上，
+      所以任何人（包括看到源码的人）都无法自己伪造授权码 —— 这比"嵌入哈希密码"强得多：
+      哈希是对称的，密钥一旦写进 HTML 就等于把钥匙交给了用户。
+   2. 这是「防君子」不是「防破解」：浏览器里跑的校验，按 F12 改一行就能绕过。
+      真要挡住破解只能上服务端。见文末说明。
+   3. 到期后走「软锁」：查看 / 记录 / 导出自己的数据 永远免费，只锁 导出图片PDF / 打印 / 分享 / 另存为。
+      既保住付费理由，又不扣押用户数据（这点很重要）。
+   ================================================================== */
+var TRIAL_DAYS=15;
+var GATE_SOFT=true;            /* 改成 false 则到期后连查看一起锁（不建议，容易招负面口碑） */
+var BRAND='';                  /* 分享图 / 导出页脚的落款，例如 'by 你的名字'，留空则不显示 */
+var PAY={wx:'',afd:'',name:APP_NAME};   /* 填收款链接后，「复制付款说明」会带上 */
+var LIC_PUB={x:'095MsAc3EGQzM1i7oR5xEOIuALe5fkVobz7luU4s17c',y:'sQi57wBuqTEmbQrLBFUEBdT2EVfWlhI994zjCig82Qw'};
+var LKEY='cq_nanan_lic_v1';
+var LIC=null;                  /* {exp:'YYYYMMDD',tier:'月费'|'年费',code:'',mid:'*'} */
+var pickT='Y';
+
+/* Crockford base32：全大写、去掉 I L O U，人工抄写不易错 */
+var B32='0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+function b32e(bs){
+  var o='',a=0,b=0;
+  for(var i=0;i<bs.length;i++){a=(a<<8)|(bs[i]&255);b+=8;while(b>=5){o+=B32[(a>>>(b-5))&31];b-=5;}}
+  if(b>0)o+=B32[(a<<(5-b))&31];
+  return o;
+}
+function b32d(s){
+  s=String(s||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1').replace(/[^0-9A-Z]/g,'');
+  var o=[],a=0,b=0;
+  for(var i=0;i<s.length;i++){
+    var v=B32.indexOf(s.charAt(i)); if(v<0)continue;
+    a=(a<<5)|v;b+=5; if(b>=8){o.push((a>>>(b-8))&255);b-=8;}
+  }
+  return new Uint8Array(o);
+}
+/* 本机标识：只用于「把授权码绑定到某台设备」，不是安全边界 */
+function mid(){
+  var s=[navigator.userAgent,(screen&&screen.width)+'x'+(screen&&screen.height)+'x'+((screen&&screen.colorDepth)||0),
+    new Date().getTimezoneOffset(),navigator.language,navigator.hardwareConcurrency||0].join('|');
+  var h=0x811c9dc5;
+  for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h+((h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24)))>>>0;}
+  return ('0000000'+(h>>>0).toString(16)).slice(-8).toUpperCase();
+}
+function licLoad(){try{var r=localStorage.getItem(LKEY);if(r)LIC=JSON.parse(r);}catch(e){}}
+function licSave(){try{if(LIC)localStorage.setItem(LKEY,JSON.stringify(LIC));else localStorage.removeItem(LKEY);}catch(e){}}
+function firstOpen(){
+  if(!S.meta.first){S.meta.first=Date.now();save();}
+  return S.meta.first;
+}
+function trialLeft(){
+  return Math.max(0,Math.ceil((firstOpen()+TRIAL_DAYS*86400000-Date.now())/86400000));
+}
+function today8(){var d=new Date();return ''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());}
+function licensed(){return !!(LIC&&LIC.exp&&today8()<=LIC.exp);}
+function unlocked(){return licensed()||trialLeft()>0;}
+/* 校验授权码：验签 + 到期 + 设备绑定 */
+function licVerify(code){
+  return new Promise(function(res,rej){
+    var raw=String(code||'').trim().toUpperCase().replace(/\s+/g,'');
+    var m=raw.match(/^QY-([0-9A-Z]+)-([0-9A-Z]+)$/);
+    if(!m){rej(new Error('授权码格式不对，应为 QY-xxxx-xxxx 两段'));return;}
+    /* base32 尾部存在被丢弃的冗余位，必须校验「规范化形式」，
+       否则末尾字符被改掉也能验过（不产生伪造风险，但会让错误码静默通过） */
+    if(b32e(b32d(m[1]))!==m[1]||b32e(b32d(m[2]))!==m[2]){
+      rej(new Error('授权码格式不合法（字符或长度有误），请完整复制后重试'));return;
+    }
+    var payload='', sig=b32d(m[2]);
+    try{payload=new TextDecoder().decode(b32d(m[1]));}catch(e){rej(new Error('授权码解析失败'));return;}
+    var p=payload.split('|');
+    if(p.length<4||p[0]!=='QY1'){rej(new Error('授权码内容无法识别'));return;}
+    if(p.length>=5&&p[4]!=='*'&&p[4]!==mid()){rej(new Error('此授权码已绑定其他设备（本机码 '+mid()+'）'));return;}
+    if(!(window.crypto&&crypto.subtle&&crypto.subtle.importKey)){
+      rej(new Error('当前环境不支持浏览器验签。请用 Chrome / Edge 直接双击打开本文件（file:// 或 https 均可）后再激活。'));return;
+    }
+    var jwk={kty:'EC',crv:'P-256',x:LIC_PUB.x,y:LIC_PUB.y};
+    crypto.subtle.importKey('jwk',jwk,{name:'ECDSA',namedCurve:'P-256'},false,['verify'])
+      .then(function(k){return crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},k,sig,new TextEncoder().encode(payload));})
+      .then(function(ok){
+        if(!ok){rej(new Error('签名校验失败，这不是本工具签发的授权码'));return;}
+        res({exp:p[1],tier:(p[2]==='Y'?'年费':'月费'),mid:p.length>=5?p[4]:'*',code:raw});
+      })
+      .catch(function(e){rej(new Error('验签出错：'+e.message));});
+  });
+}
+function doActivate(){
+  var v=document.getElementById('licIn').value.trim();
+  if(!v){alert('请先粘贴授权码');return;}
+  var b=document.querySelector('#licDlg .pri'); if(b){b.disabled=true;b.textContent='校验中…';}
+  licVerify(v).then(function(r){
+    LIC=r;licSave();licPill();closeSub();
+    toast('已激活：'+r.tier+'，有效期至 '+r.exp.slice(0,4)+'-'+r.exp.slice(4,6)+'-'+r.exp.slice(6));
+  }).catch(function(e){
+    alert('激活失败：'+e.message);
+    if(b){b.disabled=false;b.textContent='激活';}
+  });
+}
+function pickTier(t){
+  pickT=t;
+  document.getElementById('pcM').className='pc'+(t==='M'?' hot':'');
+  document.getElementById('pcY').className='pc'+(t==='Y'?' hot':'');
+  licTip();
+}
+function licTip(){
+  var t=document.getElementById('licTip'), s=[];
+  if(PAY.wx)s.push('<a href="'+PAY.wx+'" target="_blank" rel="noopener">微信支付</a>');
+  if(PAY.afd)s.push('<a href="'+PAY.afd+'" target="_blank" rel="noopener">爱发电</a>');
+  s.push(s.length?'':'付款方式请在作者公布的收款页完成');
+  s.push('· 付款后把收到的授权码粘贴到上面即可，历史记录不会丢。');
+  s.push('· 本机码 <b>'+mid()+'</b>：若要防止授权码被转发，付款时把这个码告诉作者，可把授权码绑定到本机。');
+  s.push('· 换电脑 / 清缓存不会丢天气数据（数据在 localStorage，可用「数据 JSON」导出备份）。');
+  t.innerHTML=s.join('<br>');
+}
+function copyPayText(){
+  var txt='我要订阅'+PAY.name+'：'+(pickT==='Y'?'年费 ¥12/年':'月费 ¥5/月')+
+    '\n当前地点：'+placeTitle()+'\n本机码：'+mid()+
+    (LIC&&LIC.exp?('\n当前有效期至：'+LIC.exp):('（续费，'+ (trialLeft()>0?'试用剩余'+trialLeft()+'天':'试用已结束') +'）'));
+  copyText(txt);
+}
+function openSub(what){
+  var t=trialLeft();
+  document.getElementById('licT').textContent=what?('解锁「'+what+'」'):'订阅状态';
+  document.getElementById('licS').textContent =
+    (t>0? ('15 天免费期中，还剩 '+t+' 天 —— 免费期内全部功能可用，到期后仅导出 / 打印 / 分享需要授权。')
+        : ('15 天免费期已结束。'+(GATE_SOFT?'查看、记录、导出自己的数据仍然免费；导出图片 / PDF、打印、一键分享、另存为 需要授权。':'')));
+  pickTier(pickT);
+  document.getElementById('licDlg').className='dlg on';
+}
+function closeSub(){document.getElementById('licDlg').className='dlg';}
+/* 门禁：未解锁则弹订阅框并返回 false（后端约束靠不上的时候，这是唯一能做的） */
+function gate(what){
+  if(unlocked())return true;
+  openSub(what);
+  return false;
+}
+function licPill(){
+  var p=document.getElementById('licp');
+  if(!p)return;
+  if(licensed()){
+    p.textContent='已激活 · '+LIC.tier+' 至 '+LIC.exp.slice(0,4)+'-'+LIC.exp.slice(4,6)+'-'+LIC.exp.slice(6);
+    p.className='pill g';
+  }else{
+    var t=trialLeft();
+    p.textContent=t>0?('免费试用 剩 '+t+' 天'):('免费期已结束 · 点此解锁');
+    p.className='pill'+(t>0?(t<=3?' w':''):' w');
+  }
+}
+
+/* ============ 详情与官方校订 ============ */
+var curD=null;
+function openDlg(d){
+  curD=d; var r=rec(d), o=cur().official[d]||{};
+  document.getElementById('dt').textContent=d+' 星期'+WD[new Date(d.replace(/-/g,'/')).getDay()];
+  var f=function(v,c){return (v==null)?'—':(Math.round(v*10)/10)+'mm'+(c!=null?' / 云量'+c+'%':'');};
+  var st=function(p,tg){return tg?'<span class="k">（'+tg+'）</span>':'';};
+  document.getElementById('dc').innerHTML=
+    '<div><span class="k">上午 05-12 时</span> '+f(r.am,r.amC)+' → '+nm(tp(r,'am'))+st(0,r.pAM?'预报未结束':'')+'</div>'+
+    '<div><span class="k">下午 12-21 时</span> '+f(r.pm,r.pmC)+' → '+nm(tp(r,'pm'))+st(0,r.pPM?'预报未结束':'')+'</div>'+
+    '<div><span class="k">全天 00-24 时</span> '+f(r.day,r.dayC)+' → '+nm(tp(r,'day'))+st(0,r.fut?'含预报时段':'')+'</div>'+
+    '<div><span class="k">来源</span> '+(r.off?'官方校订值优先':'数值再分析')+(r.partial?' · 当日逐时数据不完整':'')+'</div>';
+  document.getElementById('oa').value=(o.am==null?'':o.am);
+  document.getElementById('op').value=(o.pm==null?'':o.pm);
+  document.getElementById('od').value=(o.day==null?'':o.day);
+  document.getElementById('dlg').className='dlg on';
+}
+function closeDlg(){document.getElementById('dlg').className='dlg';}
+function saveOff(){
+  var g=function(id){var v=document.getElementById(id).value;return v===''?null:parseFloat(v);};
+  var o={am:g('oa'),pm:g('op'),day:g('od')};
+  if(o.am==null&&o.pm==null&&o.day==null)delete cur().official[curD]; else cur().official[curD]=o;
+  save();closeDlg();render();toast('已保存官方校订值 '+curD);
+}
+function clearOff(){delete cur().official[curD];save();closeDlg();render();toast('已清除 '+curD+' 官方值');}
+
+/* ============ 导入导出 ============ */
+function expJSON(){
+  var b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=fileName()+'_数据_'+ymd(new Date())+'.json';a.click();
+  toast('已导出数据 JSON');
+}
+function impJSON(el){
+  var f=el.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){try{var o=JSON.parse(rd.result);if(o.years){S=o;save();initUI();render();toast('导入成功');}else alert('文件格式不符');}catch(e){alert('解析失败：'+e.message);}};
+  rd.readAsText(f);el.value='';
+}
+
+/* ============ 提示 ============ */
+var tmr=null;
+function toast(m){var p=document.getElementById('src');p.textContent=m;p.className='pill g';clearTimeout(tmr);tmr=setTimeout(status,4000);}
+function status(){
+  var p=document.getElementById('src'), ls=S.meta.lastSync;
+  if(!ls){p.textContent='未同步';p.className='pill w';return;}
+  var d=new Date(ls);
+  p.textContent='已同步 '+pad(d.getMonth()+1)+'/'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+  p.className='pill';
+}
+
+/* ============ 时钟 ============ */
+function clock(){
+  var d=new Date();
+  document.getElementById('ck').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  document.getElementById('cd').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 星期'+WD[d.getDay()];
+  licPill();
+}
+
+/* ============ 地名 / 标题 / 文件名 ============ */
+function strip(s){return String(s||'').replace(/(维吾尔自治区|回族自治区|壮族自治区|特别行政区|自治区|省|市)$/,'');}
+function placeTitle(){
+  var p=strip(PL.prov), c=strip(PL.city), l=PL.local||'', out=[p];
+  if(c&&c!==p)out.push(c);
+  if(l&&l!==c&&l!==p)out.push(l);
+  return out.join(' · ');
+}
+/* 文件名：品牌 + 省 + 市 + 最小地名，如「山野精灵.晴雨表_重庆南岸区」 */
+function fileName(){
+  var p=strip(PL.prov), c=strip(PL.city), l=PL.local||'', s=p;
+  if(c&&c!==p)s+=c;
+  /* 直辖市下 city 与 locality 常为同一个区名，必须去重，否则出现「南岸区南岸区」 */
+  if(l&&l!==c&&l!==p)s+=l;
+  return APP_NAME+'_'+s;
+}
+function applyPlace(){
+  document.getElementById('tt').textContent=placeTitle()+' · '+APP_NAME;
+  document.title=fileName()+'.html';
+  document.getElementById('geo').textContent=LAT.toFixed(2)+'°N '+LON.toFixed(2)+'°E';
+  if(typeof rStat==='function')rStat();
+}
+
+/* ============ 定位 ============ */
+function geoName(lat,lon){
+  return jget('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+
+    '&longitude='+lon+'&localityLanguage=zh-Hans').then(function(d){
+    var adm=(d&&d.localityInfo&&d.localityInfo.administrative)||[];
+    var loc=(d&&(d.locality||d.city))||'';
+    if(!loc&&adm.length)loc=adm[adm.length-1].name||'';
+    return {prov:(d&&d.principalSubdivision)||'',city:(d&&d.city)||'',local:loc};
+  });
+}
+/* 降级：不传坐标时按请求 IP 推断位置 */
+function geoIP(){
+  return jget('https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage=zh-Hans').then(function(d){
+    if(!d||typeof d.latitude!=='number')throw new Error('IP 定位无结果');
+    return {lat:d.latitude,lon:d.longitude,prov:d.principalSubdivision||'',city:d.city||'',local:d.locality||d.city||''};
+  });
+}
+function setPlace(lat,lon,prov,city,local,by){
+  LAT=lat; LON=lon;
+  PL={prov:prov||PL.prov,city:city||PL.city,local:local||PL.local,by:by};
+  var c=cur(); c.prov=PL.prov; c.city=PL.city; c.local=PL.local; c.lat=LAT; c.lon=LON; c.by=by;
+  save(); applyPlace();
+  var lp=document.getElementById('loc'); lp.textContent=by; lp.className='pill g';
+  sync(1);   /* 换地点必须整年重取，旧坐标的缓存不能沿用 */
+}
+function geolocate(auto){
+  var lp=document.getElementById('loc');
+  lp.textContent='定位中…'; lp.className='pill w';
+  function fail(e){
+    lp.textContent='定位失败'; lp.className='pill w';
+    if(!auto)alert('定位失败：'+(e&&e.message?e.message:e)+'\n\n若在 file:// 下打开，浏览器通常禁用地理定位，会改按 IP 定位；仍失败请检查网络。');
+  }
+  var p;
+  if(navigator.geolocation&&navigator.geolocation.getCurrentPosition){
+    p=new Promise(function(res,rej){
+      navigator.geolocation.getCurrentPosition(res,function(e){rej(e);},{timeout:8000,maximumAge:600000,enableHighAccuracy:false});
+    }).then(function(pos){
+      return geoName(pos.coords.latitude,pos.coords.longitude).then(function(r){
+        setPlace(pos.coords.latitude,pos.coords.longitude,r.prov,r.city,r.local,'浏览器定位');
+      });
+    }).catch(function(){
+      return geoIP().then(function(d){setPlace(d.lat,d.lon,d.prov,d.city,d.local,'IP 定位');});
+    });
+  }else{
+    p=geoIP().then(function(d){setPlace(d.lat,d.lon,d.prov,d.city,d.local,'IP 定位');});
+  }
+  return p.catch(fail);
+}
+/* 按当前定位另存一份副本（浏览器无法直接改写磁盘上的原文件名） */
+function saveAs(){
+  if(!gate('另存为'))return;
+  try{
+    var src=(typeof SNAPSHOT==='string'&&SNAPSHOT)?SNAPSHOT:document.documentElement.outerHTML;
+    var html=src.replace(/var S=\{[^;]*;/, 'var S='+JSON.stringify(S)+';');
+    var b=new Blob([html],{type:'text/html;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(b); a.download=fileName()+'.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(a.href);},4000);
+    toast('已按「'+fileName()+'.html」另存');
+  }catch(e){alert('另存失败：'+e.message);}
+}
+
+/* ============ 同步 ============ */
+function sync(force){
+  mask(true,'正在获取天气数据…');
+  var ty=new Date().getFullYear(), p;
+  if(!force && cur().years[year] && year===ty)p=refreshRecent(year);
+  else if(!force && cur().years[year])p=Promise.resolve(cur().years[year]);
+  else p=fetchYear(year,force);
+  p.then(function(){
+    mask(false);status();lockCheck();render();
+    if(force)toast('同步完成');
+  }).catch(function(e){
+    mask(false);
+    var p=document.getElementById('src');p.textContent='同步失败';p.className='pill w';
+    render();
+    alert('天气数据获取失败：'+e.message+'\n\n若为跨域限制，请用本地服务器打开本文件：\n在此文件所在目录执行  python -m http.server 8000\n然后浏览器访问 http://localhost:8000/山野精灵.晴雨表.html');
+  });
+}
+
+/* ============ 初始化 ============ */
+function initUI(){
+  var y0=new Date().getFullYear(), s='';
+  for(var y=y0;y>=y0-5;y--)s+='<option value="'+y+'">'+y+'年</option>';
+  document.getElementById('yr').innerHTML=s;
+  document.getElementById('yr2').innerHTML=s;
+  document.getElementById('yr3').innerHTML=s;
+  document.getElementById('yr').value=year;document.getElementById('yr2').value=year;document.getElementById('yr3').value=year;
+  var ms='';for(var m=1;m<=12;m++)ms+='<option value="'+m+'">'+m+'月</option>';
+  document.getElementById('mo').innerHTML=ms;document.getElementById('mo').value=month;
+  var ss='';for(var sn in SCENES)ss+='<option>'+sn+'</option>';
+  document.getElementById('scn').innerHTML=ss;
+}
+load();licLoad();initUI();rLegend();clock();setInterval(clock,1000);
+applyPlace();
+render();
+/* 已有定位记录则沿用（避免每次打开都弹授权），否则自动定位一次 */
+if(S.cur&&S.places[S.cur]&&S.places[S.cur].by){
+  document.getElementById('loc').textContent=S.places[S.cur].by;
+  document.getElementById('loc').className='pill g';
+  sync(0);
+}else geolocate(1);
+setInterval(function(){
+  lockCheck();
+  var m=new Date().getMinutes();
+  if(m===0||m===30)sync(0);
+  document.getElementById('sch').textContent=nextSched();
+},20000);
+var rt=null;
+window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(render,180);});
+</script>
+</body>
+</html>
