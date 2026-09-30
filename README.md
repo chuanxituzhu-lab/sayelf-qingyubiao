@@ -8,7 +8,7 @@
 
 更新细节、H5 / API 运行方式、奖励规则和数据边界见 [RUN-1.2.md](RUN-1.2.md)。
 
-[⬇️ 下载最新版（自动跟随最新 Release）](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip)　·　[📱 在线打开 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)
+[⬇️ 独立 H5（单文件直下）](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)　·　[📦 最新版完整 ZIP](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip)　·　[📱 在线打开 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)
 
 ## 它能做什么
 
@@ -25,9 +25,9 @@
 
 ## 快速开始
 
-1. 手机上直接打开 [在线 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)；需要离线使用时下载最新版压缩包并解压；
-2. 双击用 Chrome / Edge 打开，允许定位（或点「重新定位」）；
-3. 完成 —— 数据保存在你自己的浏览器里（localStorage），天气服务需要网络；双向邀请奖励使用自有在线服务。
+1. 想直接使用：下载上方的[独立 H5](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)，不解压，浏览器直接打开；也可打开[在线 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)；
+2. 允许定位（或点「重新定位」）；日历、节气和分享图可在本地使用，天气数据需要网络；
+3. 数据保存在你自己的浏览器里（localStorage）。独立 H5 的订阅与“做同款”入口已连到在线页面；双向邀请奖励需另外部署 Node 服务。
 
 > 手机上可用浏览器打开 H5，再选择「添加到主屏幕」。H5 沿用单文件 HTML5 主链，天气与分享可用；跨设备邀请奖励和 AI 天气接口需另行运行 Node 服务。
 
@@ -79,9 +79,12 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 见 [LICENSE](LICENSE)。应用 © 山野精灵 SAYELF。
 
-## 1.2.2 更新
+## 1.2.3 更新
 
-- 提供 [稳定的最新版压缩包下载](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip) 和 [在线 H5 入口](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)。
+- 新增 [独立 H5 单文件下载](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)，保存后可直接用浏览器打开，无需解压。
+- 维护者可运行 `node scripts/build-standalone-h5.cjs` 重新生成该单文件发行物。
+- 保留 [最新版完整压缩包](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip) 和 [在线 H5 入口](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)。
+- 独立 H5 内的分享入口、订阅说明和二维码链接使用项目在线地址；天气读取仍需网络，双向邀请奖励需自托管 Node 服务。
 - 使用者提交的二维码裁剪后放入订阅页，微信号统一为 `chat-tea`；主应用订阅入口可直接打开二维码。
 - 新增 OpenAPI 3.1.1 接口契约：日期/节气查询公开可用；天气接口需自行配置服务端 `API_TOKEN`。
 - 通过 GitHub Pages 发布静态页面；邀请奖励台账和 AI 天气服务仍由自有 Node 服务承载。
