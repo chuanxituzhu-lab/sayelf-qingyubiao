@@ -149,6 +149,8 @@ button.pri:active{background:#0e3c69}
   @page{size:A4 landscape;margin:10mm}
 }
 .termday{box-shadow:inset 0 -2px #798e61}.calendar-extra{font-size:11px;color:var(--tx3);padding:5px 0}.calendar-extra summary{cursor:pointer}.calendar-extra input{font-size:11px}.terms{max-height:32px;overflow:auto;line-height:16px;margin-bottom:3px}
+.calendar-tools{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:relative;min-height:20px}.calendar-tools>details{padding-top:1px}.share-surprise{position:relative;margin-left:auto}.share-surprise>summary{display:flex;align-items:center;gap:10px;list-style:none;color:#a45518;font-weight:650;white-space:nowrap}.share-surprise>summary::-webkit-details-marker{display:none}.share-surprise>summary:before{content:'🎁';font-size:13px}.share-surprise>summary small{font-size:10px;font-weight:400;color:var(--tx3)}.surprise-panel{box-sizing:border-box;position:absolute;z-index:40;top:calc(100% + 7px);right:0;width:min(390px,calc(100vw - 28px));padding:13px;background:var(--bg);border:1px solid var(--line2);border-radius:10px;box-shadow:0 10px 30px #0002;color:var(--tx);white-space:normal;font-size:12px;line-height:1.65}.surprise-panel strong{font-size:13px;color:var(--tx)}.surprise-panel p{margin:5px 0 8px;color:var(--tx2)}.surprise-status{padding:7px 9px;border-radius:7px;background:var(--infoBg);color:var(--tx2);font-size:11px}.surprise-actions{display:flex;gap:8px;margin-top:10px}.surprise-actions button{font-size:11px;padding:6px 9px}.surprise-actions .pri{color:#fff}
+@media(max-width:620px){.share-surprise>summary small{display:none}.surprise-panel{width:min(360px,calc(100vw - 24px))}.surprise-actions{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -177,7 +179,7 @@ button.pri:active{background:#0e3c69}
       <button onclick="document.getElementById('imp').click()">导入</button>
       <input type="file" id="imp" accept=".json" style="display:none" onchange="impJSON(this)">
     </div>
-    <div class="calendar-extra"><div class="terms" id="solarTerms"></div><details><summary>农历日期</summary><input type="date" id="lunarDate" onchange="showLunarDate()"> <span id="lunarText"></span></details></div>
+    <div class="calendar-extra"><div class="terms" id="solarTerms"></div><div class="calendar-tools"><details><summary>农历日期</summary><input type="date" id="lunarDate" onchange="showLunarDate()"> <span id="lunarText"></span></details><details class="share-surprise" id="shareSurprise" ontoggle="shareSurpriseToggle(this)"><summary><span>分享有惊喜</span><small>晒晴雨表 · 好友做同款</small></summary><div class="surprise-panel"><strong>把你的城市晴雨表晒出来，朋友扫码生成自己的版本。</strong><p>分享永久免费。新朋友首次成功生成后，邀请双方即时获得最多 7 天 Pro；每人每月奖励最多 30 天，达上限不影响朋友获奖。</p><div class="surprise-status" id="shareSurpriseStatus">分享永久免费；离线文件奖励服务未连接，好友仍可扫码做同款。</div><div class="surprise-actions"><button class="pri" onclick="openSh()">晒出我的晴雨表</button><button onclick="copyInvite()">复制做同款链接</button></div></div></details></div></div>
     <div class="stat" id="stat"></div>
     <div class="tabs">
       <button id="tb0" class="on" onclick="tab(0)">年度视图</button>
@@ -271,7 +273,7 @@ button.pri:active{background:#0e3c69}
 <div class="dlg" id="shDlg" onclick="if(event.target===this)closeSh()">
   <div class="dbox" style="width:470px">
     <h3>一键分享</h3>
-    <div class="share-guide"><b>分享玩法：</b>晒出你的城市晴雨表，朋友扫码就能生成自己的版本。分享永久免费；新朋友首次生成后，双方可各得 7 天 Pro（邀请者每月最多累计 30 天，需在线奖励服务启用）。</div>
+    <div class="share-guide"><b>分享玩法：</b>晒出你的城市晴雨表，朋友扫码就能生成自己的版本。分享永久免费；新朋友首次生成后，双方即时获得最多 7 天 Pro（每人每月最多累计 30 天，需在线奖励服务启用）。</div>
     <div class="ds">选择平台尺寸后点「系统分享」；若没有弹出分享面板，点「保存图片」再到对应平台从相册发布。分享图已带「生成我的晴雨表」二维码。</div>
     <div class="shtip" id="inviteHint"></div><button onclick="copyInvite()">复制做同款邀请链接</button><details><summary>在线入口设置（离线分享时使用）</summary><input id="shareHome" type="url" placeholder="https://你的在线地址/"><button onclick="setShareHome()">保存入口</button></details><div class="shgrid" id="shGrid"></div>
     <div class="exprev"><canvas id="shPrev" width="240" height="320"></canvas></div>
@@ -12087,11 +12089,11 @@ function shareText(){
     '最大单日 '+st.max+'mm，暴雨及以上 '+st.storm+' 天，已记录 '+st.n+' 天。\n'+
     '逐日天气图案按 GB/T 28592-2012 降水量等级绘制，上午 05-12 时、下午 12-21 时分段记录。\n#山野精灵晴雨表 #晴雨表 #天气记录 #'+strip(PL.prov)+
     '\n'+(link?'朋友扫码即可生成自己的城市晴雨表。':'设置在线入口后，朋友即可扫码生成同款。')+
-    (GROWTH.ready?'新朋友首次完成生成后，双方可各得7天Pro（邀请者每月最多30天）。':'分享永久免费；邀请奖励需在线服务启用。')+
+    (GROWTH.ready?'新朋友首次完成生成后，双方即时获得最多7天Pro（每人每月最多30天）。':'分享永久免费；邀请奖励需在线服务启用。')+
     '\n'+APP_IP+'\n生成我的晴雨表：'+(link||'在线入口尚未配置');
 }
 function openSh(){
-  if(GROWTH.ready)growthAPI('state').then(function(s){GROWTH.state=s;document.getElementById('inviteHint').textContent=inviteSummary();document.getElementById('shTxt').value=shareText();shPrev();}).catch(function(){});
+  if(GROWTH.ready)refreshGrowth();
   document.getElementById('inviteHint').textContent=inviteSummary()+(sameStyleURL()&&/localhost|127\.0\.0\.1/.test(sameStyleURL())?' 当前为本机测试入口，手机扫码需配置可访问的在线地址。':'');
   var g=document.getElementById('shGrid'), h='';
   SHARE.forEach(function(o){
@@ -12128,19 +12130,19 @@ function shareTo(k){
     try{f=new File([b],nm,{type:'image/png'});}catch(e){}
     if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
       navigator.share({files:[f],title:APP_NAME+' · '+placeTitle(),text:txt}).then(function(){
-        toast('已调起系统分享');
-      },function(e){ if(e&&e.name!=='AbortError'){dl(b,nm);copyText(txt);toast('已保存分享图并复制文案');} });
+        toast('分享完成！好友首次生成后奖励即时到账，继续分享可累积 Pro。');refreshGrowth();
+      },function(e){ if(e&&e.name!=='AbortError'){dl(b,nm);copyText(txt);toast('分享图已保存并复制文案，可直接发朋友圈；好友首次生成后奖励即时到账。');refreshGrowth();} });
       return;
     }
     dl(b,nm);copyText(txt);
-    toast('已保存 '+cfg.w+'×'+cfg.h+' 分享图，文案已复制');
+    toast('已保存分享图并复制文案，可直接晒到朋友圈；好友首次生成后奖励即时到账。');refreshGrowth();
   },'image/png');
 }
 function dlShare(){
   /* Sharing is always free. */
   var cfg=shCfg(shKey), nm=fileName()+'_'+cfg.n+'_'+ymd(new Date())+'.png';
   makeShareSheet(curTab===3?0:curTab,cfg.w,cfg.h).toBlob(function(b){if(b)dl(b,nm);},'image/png');
-  toast('已保存 '+cfg.w+'×'+cfg.h+' 分享图');
+  toast('分享图已保存，可发到朋友圈；好友首次生成后奖励即时到账。');refreshGrowth();
 }
 function sysShare(){
   /* Sharing is always free. */
@@ -12149,12 +12151,12 @@ function sysShare(){
     if(!b)return;
     var f=null;try{f=new File([b],nm,{type:'image/png'});}catch(e){}
     if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
-      navigator.share({files:[f],title:APP_NAME+' · '+placeTitle(),text:shareText()}).catch(function(){});
+      navigator.share({files:[f],title:APP_NAME+' · '+placeTitle(),text:shareText()}).then(function(){toast('分享完成！好友首次生成后奖励即时到账，继续分享可累积 Pro。');refreshGrowth();}).catch(function(){});
     }else if(navigator.share){
-      navigator.share({title:APP_NAME+' · '+placeTitle(),text:shareText()}).catch(function(){});
+      navigator.share({title:APP_NAME+' · '+placeTitle(),text:shareText()}).then(function(){toast('分享完成！好友首次生成后奖励即时到账，继续分享可累积 Pro。');refreshGrowth();}).catch(function(){});
     }else{
       dl(b,nm);copyText(shareText());
-      toast('当前浏览器不支持系统分享，已改为保存图片并复制文案');
+      toast('分享图已保存并复制文案，可直接晒到朋友圈；好友首次生成后奖励即时到账。');refreshGrowth();
     }
   },'image/png');
 }
@@ -12526,7 +12528,7 @@ function initUI(){
   document.getElementById('scn').innerHTML=ss;
 }
 /* Growth and calendar additions; no weather records are sent to the reward ledger. */
-var GROWTH={state:null,ready:false};
+var GROWTH={state:null,ready:false},growthRefreshPromise=null,rewardCheckTimer=null;
 var SHARE_HOME=''; // Offline distribution: set to your deployed HTTPS home URL.
 try{SHARE_HOME=localStorage.getItem('qy_share_home')||SHARE_HOME;}catch(e){}
 function setShareHome(){
@@ -12559,16 +12561,50 @@ function growthAPI(path,body){
 function growthInit(){
   if(location.protocol==='file:')return Promise.resolve();
   var ref=new URLSearchParams(location.search).get('ref');
-  return growthAPI('state').then(function(s){GROWTH.state=s;GROWTH.ready=true;return ref?growthAPI('invite',{ref:ref}):s;}).then(function(s){GROWTH.state=s;licPill();}).catch(function(){GROWTH.ready=false;});
+  return growthAPI('state').then(function(s){GROWTH.state=s;GROWTH.ready=true;return ref?growthAPI('invite',{ref:ref}):s;}).then(function(s){GROWTH.state=s;licPill();updateGrowthUI();scheduleRewardCheck();}).catch(function(){GROWTH.ready=false;updateGrowthUI();});
 }
-function refreshGrowth(){if(GROWTH.ready)growthAPI('state').then(function(s){GROWTH.state=s;licPill();document.getElementById('rewardHint').textContent=inviteSummary();}).catch(function(){});}
+function refreshGrowth(){
+  if(!GROWTH.ready)return Promise.resolve();
+  if(growthRefreshPromise)return growthRefreshPromise;
+  var previous=GROWTH.state;
+  growthRefreshPromise=growthAPI('state').then(function(s){
+    var earned=previous&&previous.month&&s.month&&previous.month===s.month?Math.max(0,(s.monthDays||0)-(previous.monthDays||0)):0;
+    GROWTH.state=s;licPill();updateGrowthUI();
+    if(earned)toast('好友完成首次生成，奖励即时到账 +'+earned+'天 Pro；本月已累计 '+s.monthDays+'/30天。继续分享给朋友！');
+    return s;
+  }).catch(function(){}).finally(function(){growthRefreshPromise=null;});
+  return growthRefreshPromise;
+}
 window.addEventListener('focus',refreshGrowth);
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){if(rewardCheckTimer){clearTimeout(rewardCheckTimer);rewardCheckTimer=null;}return;}
+  refreshGrowth().then(scheduleRewardCheck);
+});
+function scheduleRewardCheck(){
+  if(rewardCheckTimer){clearTimeout(rewardCheckTimer);rewardCheckTimer=null;}
+  var panel=document.getElementById('shareSurprise');
+  if(document.hidden||!GROWTH.ready||!panel||!panel.open)return;
+  rewardCheckTimer=setTimeout(function(){rewardCheckTimer=null;refreshGrowth().then(scheduleRewardCheck);},15000);
+}
+function shareSurpriseToggle(el){
+  if(!el.open){if(rewardCheckTimer){clearTimeout(rewardCheckTimer);rewardCheckTimer=null;}return;}
+  refreshGrowth().then(scheduleRewardCheck);
+}
+function rewardStatus(){
+  if(!GROWTH.ready)return '奖励服务未连接；作品分享、保存图片和扫码做同款仍可免费使用。';
+  var s=GROWTH.state||{},until=Date.parse(s.proUntil)>Date.now()?'Pro有效至 '+s.proUntil.slice(0,10):'尚未获得邀请 Pro';
+  return '北京时间 '+(s.month||'本月')+' 已获 '+(s.monthDays||0)+'/30天 · '+until+'。新奖励即时到账；本卡展开时自动刷新。';
+}
+function updateGrowthUI(){
+  var summary=inviteSummary(),hint=document.getElementById('rewardHint'),invite=document.getElementById('inviteHint'),status=document.getElementById('shareSurpriseStatus');
+  if(hint)hint.textContent=summary;if(invite)invite.textContent=summary;if(status)status.textContent=rewardStatus();
+}
 function rewardActive(){return !!(GROWTH.state&&Date.parse(GROWTH.state.proUntil)>Date.now());}
 function growthCompleted(){
   if(!GROWTH.ready)return;
   var records=cur().years[year]||{};
   if(!Object.keys(records).some(function(k){return records[k].day!=null;}))return;
-  growthAPI('complete',{}).then(function(s){GROWTH.state=s;licPill();if(s.awarded)toast('首次生成成功，邀请权益已到账（受每月30天上限限制）');}).catch(function(e){toast(e.message);});
+  growthAPI('complete',{}).then(function(s){GROWTH.state=s;licPill();updateGrowthUI();if(s.awarded){var d=Number(s.inviteeDays)||0;toast(d?'首次生成成功，邀请奖励即时到账 +'+d+'天 Pro；邀请朋友可继续累积。':'首次生成成功；本月奖励已达上限，Pro 天数未增加。');}}).catch(function(e){toast(e.message);});
 }
 function sameStyleURL(){
   var home=(GROWTH.state&&GROWTH.state.home)||SHARE_HOME;
@@ -12601,7 +12637,7 @@ function makeShareSheet(mode,W,H){
 }
 function inviteSummary(){
   var s=GROWTH.state;
-  return s?'本月邀请奖励 '+s.monthDays+'/30 天 · Pro 剩余 '+Math.max(0,Math.ceil((Date.parse(s.proUntil)-Date.now())/86400000))+' 天。好友首次生成后双方可各得7天。':'分享永久免费 · 在线邀请奖励服务未连接。';
+  return s?'本月邀请奖励 '+s.monthDays+'/30 天 · Pro 剩余 '+Math.max(0,Math.ceil((Date.parse(s.proUntil)-Date.now())/86400000))+' 天。好友首次生成后双方即时获得最多7天。':'分享永久免费 · 在线邀请奖励服务未连接。';
 }
 function copyInvite(){var u=sameStyleURL();if(u)copyText(u);else toast('请先配置在线版入口');}
 function applySameStyle(){

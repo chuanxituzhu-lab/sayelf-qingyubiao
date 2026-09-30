@@ -79,8 +79,10 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 见 [LICENSE](LICENSE)。应用 © 山野精灵 SAYELF。
 
-## 1.2.4 更新
+## 1.2.5 更新
 
+- 日历节气行下新增默认折叠的“分享有惊喜”入口，点开可查看奖励规则，并一键晒出晴雨表或复制做同款链接。
+- 好友首次成功生成后奖励立即入账并显示实际天数；邀请者展开卡片期间自动刷新，回到页面时也会同步状态，分享后提示可继续晒朋友圈、邀请朋友。
 - 分享弹窗增加“分享作品 → 扫码做同款 → 首次生成获奖励”的简明说明；操作提示讲清系统分享和保存图片两条路径，复制文案也带同款引导。
 - 新增 [独立 H5 单文件下载](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)，保存后可直接用浏览器打开，无需解压。
 - 维护者可运行 `node scripts/build-standalone-h5.cjs` 重新生成该单文件发行物。

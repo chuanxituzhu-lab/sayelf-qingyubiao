@@ -19,7 +19,7 @@ function session(req,res){
   db.users[id]={code:crypto.randomBytes(12).toString('hex'),months:{},proUntil:new Date(0).toISOString(),generated:null,ref:null};save();
   res.setHeader('Set-Cookie',`qy_session=${id}; HttpOnly; SameSite=Lax; Path=/; Max-Age=31536000${home.protocol==='https:'?'; Secure':''}`);return id;
 }
-function state(id,extra={}){const u=db.users[id];return {code:u.code,home:home.href,proUntil:u.proUntil,monthDays:u.months[monthKey(new Date())]||0,generated:!!u.generated,...extra};}
+function state(id,extra={}){const u=db.users[id],month=monthKey(new Date());return {code:u.code,home:home.href,proUntil:u.proUntil,month,monthDays:u.months[month]||0,generated:!!u.generated,...extra};}
 function json(res,status,o){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(o));}
 async function body(req){let s='';for await(const c of req){s+=c;if(s.length>4096)throw Error('Request too large');}return JSON.parse(s||'{}');}
 const handleAiApi=createAiApiHandler({apiToken:process.env.API_TOKEN,readJson:body});

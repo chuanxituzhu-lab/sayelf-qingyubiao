@@ -23,8 +23,8 @@ for (const [before, after] of replacements) {
   html = html.slice(0, first) + after + html.slice(first + before.length);
 }
 
-if (!html.includes('data:image/jpeg;base64,') || !html.includes('function makeShareSheet(') || !html.includes('class="share-guide"')) {
-  throw new Error('The source is missing embedded branding, the built-in share renderer or its sharing guide.');
+if (!html.includes('data:image/jpeg;base64,') || !html.includes('function makeShareSheet(') || !html.includes('class="share-guide"') || !html.includes('id="shareSurprise"')) {
+  throw new Error('The source is missing embedded branding, the built-in share renderer or sharing guidance.');
 }
 if (html.includes("var PAY_ROOT=location.pathname") || html.includes("var SHARE_HOME='';")) {
   throw new Error('A local-only URL remained in the standalone build.');

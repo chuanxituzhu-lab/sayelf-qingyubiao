@@ -10,3 +10,12 @@ test('both parties, retries, cap, month rollover, self and invalid invite',()=>{
   db.users.bad=user('bad');db.users.bad.ref='unknown';assert.equal(complete(db,'bad',now).awarded,false);
   assert.equal(monthKey(new Date('2026-09-30T16:00:00Z')),monthKey(new Date('2026-10-01T00:00:00Z')));
 });
+test('valid first generation credits Pro immediately from the event time',()=>{
+  const now=new Date('2026-10-01T03:04:05Z'),db={users:{a:user('a'),b:user('b')},events:[]};
+  db.users.b.ref='a';
+  const result=complete(db,'b',now),expected=new Date(now.getTime()+7*86400000).toISOString();
+  assert.deepEqual(result,{awarded:true,inviterDays:7,inviteeDays:7});
+  assert.equal(db.users.a.proUntil,expected);
+  assert.equal(db.users.b.proUntil,expected);
+  assert.equal(db.events[0].at,now.toISOString());
+});
