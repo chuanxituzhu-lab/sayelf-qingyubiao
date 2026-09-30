@@ -13,7 +13,6 @@ let html = fs.readFileSync(source, 'utf8');
 const replacements = [
   ["var PAY_ROOT=location.pathname.indexOf('/templates/')>=0?'../':'./';", `var PAY_ROOT='${publicRoot}';`],
   ["var SHARE_HOME=''; // Offline distribution: set to your deployed HTTPS home URL.", `var SHARE_HOME='${publicRoot}'; // Standalone H5: use the published HTTPS entry for share links.`],
-  ['离线版可免费分享；在线版支持双向邀请奖励。', '离线版可免费分享；启用自托管奖励服务后可获得双向邀请奖励。'],
 ];
 
 for (const [before, after] of replacements) {
@@ -24,8 +23,8 @@ for (const [before, after] of replacements) {
   html = html.slice(0, first) + after + html.slice(first + before.length);
 }
 
-if (!html.includes('data:image/jpeg;base64,') || !html.includes('function makeShareSheet(')) {
-  throw new Error('The source is missing embedded branding or the built-in share renderer.');
+if (!html.includes('data:image/jpeg;base64,') || !html.includes('function makeShareSheet(') || !html.includes('class="share-guide"')) {
+  throw new Error('The source is missing embedded branding, the built-in share renderer or its sharing guide.');
 }
 if (html.includes("var PAY_ROOT=location.pathname") || html.includes("var SHARE_HOME='';")) {
   throw new Error('A local-only URL remained in the standalone build.');

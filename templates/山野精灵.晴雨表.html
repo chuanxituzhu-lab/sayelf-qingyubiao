@@ -127,6 +127,8 @@ button.pri:active{background:#0e3c69}
 .shb em{font-style:normal;font-size:10px;color:var(--tx3);font-variant-numeric:tabular-nums}
 .shb:hover{background:var(--bg2);border-color:var(--tx2)}
 .shb.on{border-color:#185fa5;background:var(--infoBg)}
+.share-guide{font-size:11px;line-height:1.65;color:var(--tx2);background:var(--infoBg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:8px 0}
+.share-guide b{font-weight:600;color:var(--tx)}
 .shtxt{width:100%;height:76px;font:inherit;font-size:11px;padding:7px 9px;border:1px solid var(--line2);border-radius:7px;background:var(--bg2);color:var(--tx);resize:none;line-height:1.6}
 .shtip{font-size:10px;color:var(--tx3);margin-top:6px;line-height:1.6;border-top:1px dashed var(--line);padding-top:5px}
 .price{display:flex;gap:8px;margin:8px 0}
@@ -269,7 +271,8 @@ button.pri:active{background:#0e3c69}
 <div class="dlg" id="shDlg" onclick="if(event.target===this)closeSh()">
   <div class="dbox" style="width:470px">
     <h3>一键分享</h3>
-    <div class="ds">微信 / 朋友圈 / 抖音 / 视频号都没有开放给网页的直连分享接口（需平台 SDK 与服务端签名）。这里的做法：按各平台推荐尺寸生成分享长图 —— 手机上会调起系统分享面板直接选微信或抖音；电脑上自动保存图片并复制文案，发布时从相册选这张图即可。</div>
+    <div class="share-guide"><b>分享玩法：</b>晒出你的城市晴雨表，朋友扫码就能生成自己的版本。分享永久免费；新朋友首次生成后，双方可各得 7 天 Pro（邀请者每月最多累计 30 天，需在线奖励服务启用）。</div>
+    <div class="ds">选择平台尺寸后点「系统分享」；若没有弹出分享面板，点「保存图片」再到对应平台从相册发布。分享图已带「生成我的晴雨表」二维码。</div>
     <div class="shtip" id="inviteHint"></div><button onclick="copyInvite()">复制做同款邀请链接</button><details><summary>在线入口设置（离线分享时使用）</summary><input id="shareHome" type="url" placeholder="https://你的在线地址/"><button onclick="setShareHome()">保存入口</button></details><div class="shgrid" id="shGrid"></div>
     <div class="exprev"><canvas id="shPrev" width="240" height="320"></canvas></div>
     <textarea class="shtxt" id="shTxt" spellcheck="false"></textarea>
@@ -12079,11 +12082,13 @@ var SHARE=[
 ];
 var shKey='wx';
 function shareText(){
-  var st=statData();
+  var st=statData(),link=sameStyleURL();
   return '【'+APP_NAME+' · '+placeTitle()+'】'+year+' 年截至 '+ymd(new Date())+'：累计降水 '+st.tot+'mm，雨日 '+st.wet+' 天，'+
     '最大单日 '+st.max+'mm，暴雨及以上 '+st.storm+' 天，已记录 '+st.n+' 天。\n'+
     '逐日天气图案按 GB/T 28592-2012 降水量等级绘制，上午 05-12 时、下午 12-21 时分段记录。\n#山野精灵晴雨表 #晴雨表 #天气记录 #'+strip(PL.prov)+
-    '\n'+APP_IP+'\n生成我的晴雨表：'+(sameStyleURL()||'在线入口尚未配置');
+    '\n'+(link?'朋友扫码即可生成自己的城市晴雨表。':'设置在线入口后，朋友即可扫码生成同款。')+
+    (GROWTH.ready?'新朋友首次完成生成后，双方可各得7天Pro（邀请者每月最多30天）。':'分享永久免费；邀请奖励需在线服务启用。')+
+    '\n'+APP_IP+'\n生成我的晴雨表：'+(link||'在线入口尚未配置');
 }
 function openSh(){
   if(GROWTH.ready)growthAPI('state').then(function(s){GROWTH.state=s;document.getElementById('inviteHint').textContent=inviteSummary();document.getElementById('shTxt').value=shareText();shPrev();}).catch(function(){});
@@ -12596,7 +12601,7 @@ function makeShareSheet(mode,W,H){
 }
 function inviteSummary(){
   var s=GROWTH.state;
-  return s?'本月邀请奖励 '+s.monthDays+'/30 天 · 邀请 Pro 剩余 '+Math.max(0,Math.ceil((Date.parse(s.proUntil)-Date.now())/86400000))+' 天。好友首次完成生成后双方各得7天，剩余额度不足7天时按余额发放。':'离线版可免费分享；在线版支持双向邀请奖励。';
+  return s?'本月邀请奖励 '+s.monthDays+'/30 天 · Pro 剩余 '+Math.max(0,Math.ceil((Date.parse(s.proUntil)-Date.now())/86400000))+' 天。好友首次生成后双方可各得7天。':'分享永久免费 · 在线邀请奖励服务未连接。';
 }
 function copyInvite(){var u=sameStyleURL();if(u)copyText(u);else toast('请先配置在线版入口');}
 function applySameStyle(){
