@@ -1342,7 +1342,7 @@ var BRAND='';                  /* 分享图 / 导出页脚的落款，例如 'by
    afd  = 爱发电主页，例如 https://afdian.com/a/sayelf   （支持微信付款、平台担保）
    wxId = 微信号（填了之后弹窗里直接显示并复制给对方，这是主要联系方式）
    wx   = 微信加好友二维码图片链接（可选，仅作展示，一般放在订阅页上） */
-var PAY={page:'pay/山野精灵.晴雨表_订阅与授权.html',afd:'',wxId:'',wx:'',name:APP_NAME};
+var PAY={page:'pay/山野精灵.晴雨表_订阅与授权.html',afd:'',wxId:'chat_tea',wx:'',name:APP_NAME};
 var LIC_PUB={x:'095MsAc3EGQzM1i7oR5xEOIuALe5fkVobz7luU4s17c',y:'sQi57wBuqTEmbQrLBFUEBdT2EVfWlhI994zjCig82Qw'};
 var LKEY='cq_nanan_lic_v1';
 var LIC=null;                  /* {exp:'YYYYMMDD',tier:'月费'|'年费',code:'',mid:'*'} */
@@ -1436,7 +1436,7 @@ function licTip(){
   var t=document.getElementById('licTip'), s=[], e=[];
   if(PAY.page)e.push('<a href="'+PAY.page+'" target="_blank" rel="noopener">订阅与授权页</a>');
   if(PAY.afd)e.push('<a href="'+PAY.afd+'" target="_blank" rel="noopener">爱发电（可用微信付款）</a>');
-  if(PAY.wxId)e.push('加微信好友 <b>'+PAY.wxId+'</b>'
+  if(PAY.wxId)e.push('加微信好友 <b>'+PAY.wxId+'</b>（备注「晴雨表」）'
       +(PAY.wx?(' <a href="'+PAY.wx+'" target="_blank" rel="noopener">看二维码</a>'):''));
   s.push(e.length?('订阅方式：'+e.join(' · ')):'订阅方式请见下方「订阅页」（或先用「复制付款说明」把订单信息发给作者）');
   s.push('· 付款后把收到的授权码粘贴到上面即可，历史记录不会丢。');
