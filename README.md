@@ -79,10 +79,11 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 见 [LICENSE](LICENSE)。应用 © 山野精灵 SAYELF。
 
-## 1.2.0 更新
+## 1.2.1 更新
 
 - 提供 [稳定的最新版压缩包下载](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip) 和 [在线 H5 入口](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)。
 - 使用者提交的二维码裁剪后放入订阅页，微信号统一为 `chat-tea`；主应用订阅入口可直接打开二维码。
 - 新增 OpenAPI 3.1.1 接口契约：日期/节气查询公开可用；天气接口需自行配置服务端 `API_TOKEN`。
 - 通过 GitHub Pages 发布静态页面；邀请奖励台账和 AI 天气服务仍由自有 Node 服务承载。
+- GitHub Actions 使用兼容 Node.js 24 的 Pages 部署动作。
 - 继承 1.1.0：免费分享与“生成我的晴雨表”同款二维码、有效邀请双方奖励、每人每月最多 30 天、24 节气及默认折叠农历。

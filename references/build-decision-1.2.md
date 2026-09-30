@@ -1,8 +1,8 @@
-# Build Decision Record — 1.2.0
+# Build Decision Record — 1.2.1
 
 1. **Real task:** Put the existing single-file weather calendar on an easy-to-share H5 URL, make the supplied WeChat contact usable, expose a small AI-callable API, and keep README downloads on the latest release.
 2. **Step 0 classification:** **Improve**. Workspace/repository inspection found no OpenAPI or AI API module. GitHub repository search for weather-calendar OpenAPI/API found no directly reusable project; reuse the existing app, Node server, and bundled `lunar-javascript`; OpenAPI 3.1.1 is the interoperable contract. GitHub Pages is used for static hosting.
-3. **Execution verdict:** GO for the user's requested public repo update, version release, and static H5 publication. Only project assets, code, public calendar data, and the supplied QR crop are in scope.
+3. **Execution verdict:** GO for the user's requested public repo update, version release, and static H5 publication. Only project assets, code, public calendar data, and the supplied QR crop are in scope. A Pages workflow runtime failure required a patch release using Node.js 24-compatible official Actions.
 4. **Measurable difference:** one stable mobile entry URL; 24 solar terms returned per supported year; calendar dates require no AI credentials; weather calls require an operator token; latest-download URL stays stable across versioned Releases; no new runtime package.
 5. **Success evidence:** decode the cropped supplied QR, browser-check H5 redirect and share/contact links, run API/reward tests, validate the OpenAPI document and static build, verify release download and deployed Pages URL.
 6. **Minimum core:** root redirect, Pages workflow, corrected pay/contact paths, one API router module, three documented endpoints, OpenAPI schema, tests, updated README and release archive.

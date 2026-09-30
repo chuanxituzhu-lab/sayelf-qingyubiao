@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: SAYELF 晴雨表 API
-  version: 1.2.0
+  version: 1.2.1
   description: >-
     Provider-neutral AI tool API for Chinese lunar dates, solar terms, and an explicitly requested
     weather preview. Calendar responses contain public calendar data only. Weather requests send
