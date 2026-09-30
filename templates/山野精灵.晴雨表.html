@@ -12187,7 +12187,8 @@ var BRAND='';                  /* 分享图 / 导出页脚的落款，例如 'by
    afd  = 爱发电主页，例如 https://afdian.com/a/sayelf   （支持微信付款、平台担保）
    wxId = 微信号（填了之后弹窗里直接显示并复制给对方，这是主要联系方式）
    wx   = 微信加好友二维码图片链接（可选，仅作展示，一般放在订阅页上） */
-var PAY={page:'pay/山野精灵.晴雨表_订阅与授权.html',afd:'',wxId:'chat_tea',wx:'',name:APP_NAME};
+var PAY_ROOT=location.pathname.indexOf('/templates/')>=0?'../':'./';
+var PAY={page:PAY_ROOT+'pay/山野精灵.晴雨表_订阅与授权.html',afd:'',wxId:'chat-tea',wx:PAY_ROOT+'pay/微信二维码.jpg',name:APP_NAME};
 var LIC_PUB={x:'095MsAc3EGQzM1i7oR5xEOIuALe5fkVobz7luU4s17c',y:'sQi57wBuqTEmbQrLBFUEBdT2EVfWlhI994zjCig82Qw'};
 var LKEY='cq_nanan_lic_v1';
 var LIC=null;                  /* {exp:'YYYYMMDD',tier:'月费'|'年费',code:'',mid:'*'} */
@@ -12566,7 +12567,11 @@ function growthCompleted(){
 }
 function sameStyleURL(){
   var home=(GROWTH.state&&GROWTH.state.home)||SHARE_HOME;
-  if(!home&&location.protocol!=='file:')home=location.origin+'/';
+  if(!home&&location.protocol!=='file:'){
+    var appPath=location.pathname, marker=appPath.indexOf('/templates/');
+    var rootPath=marker>=0?appPath.slice(0,marker+1):(appPath.endsWith('/')?appPath:appPath.slice(0,appPath.lastIndexOf('/')+1));
+    home=location.origin+rootPath;
+  }
   if(!home)return '';
   try{var u=new URL(home);if(!/^https?:$/.test(u.protocol))return '';u.searchParams.set('make','1');u.searchParams.set('view',String(curTab===3?0:curTab));u.searchParams.set('year',String(year));u.searchParams.set('month',String(month));if(GROWTH.state)u.searchParams.set('ref',GROWTH.state.code);return u.href;}catch(e){return '';}
 }

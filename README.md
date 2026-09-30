@@ -2,13 +2,13 @@
 
 > 把每天的降水，画成一本可以翻的日历。
 
-单文件离线版双击即可使用；在线邀请版另附轻量 Node.js 服务。新版加入 SAYELF 森林精灵品牌图标、免费分享、做同款邀请、二十四节气和折叠农历。
+单文件 HTML5 应用保留原有天气日历主链，并加入 SAYELF 品牌、免费分享、做同款邀请、二十四节气和折叠农历。手机可直接打开在线 H5；在线邀请奖励与 AI 天气接口由可选 Node.js 服务承载。
 
 ![SAYELF 山野精灵图标](assets/sayelf-logo.jpg)
 
-更新细节、离线/在线启动、奖励规则和数据边界见 [RUN-1.1.md](RUN-1.1.md)。
+更新细节、H5 / API 运行方式、奖励规则和数据边界见 [RUN-1.2.md](RUN-1.2.md)。
 
-[⬇️ 下载应用（templates/山野精灵.晴雨表.html）](templates/山野精灵.晴雨表.html)
+[⬇️ 下载最新版（自动跟随最新 Release）](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip)　·　[📱 在线打开 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)
 
 ## 它能做什么
 
@@ -25,11 +25,11 @@
 
 ## 快速开始
 
-1. 下载 [`templates/山野精灵.晴雨表.html`](templates/山野精灵.晴雨表.html)（含日历/二维码代码，约 700KB）；
+1. 手机上直接打开 [在线 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)；需要离线使用时下载最新版压缩包并解压；
 2. 双击用 Chrome / Edge 打开，允许定位（或点「重新定位」）；
 3. 完成 —— 数据保存在你自己的浏览器里（localStorage），天气服务需要网络；双向邀请奖励使用自有在线服务。
 
-> 手机上建议在线版 + 「添加到主屏幕」；跨域受限时可在文件目录执行 `python -m http.server 8000` 后访问 `http://localhost:8000/山野精灵.晴雨表.html`。
+> 手机上可用浏览器打开 H5，再选择「添加到主屏幕」。H5 沿用单文件 HTML5 主链，天气与分享可用；跨设备邀请奖励和 AI 天气接口需另行运行 Node 服务。
 
 ## 作为 WorkBuddy 技能安装
 
@@ -62,8 +62,12 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 应用自带 15 天全功能试用；到期后查看、记录、导出自己的数据**永久免费**，分享永久免费；原¥12/年、¥5/月授权方式保留，仅专业导出 / 打印 / 场景决策等高级权益按原规则授权。
 
-- 订阅页：[`pay/山野精灵.晴雨表_订阅与授权.html`](pay/山野精灵.晴雨表_订阅与授权.html) —— 价格、**加微信好友**、授权流程、FAQ 一页说明，可离线打开；不提供公开收款码，付款通过加好友后一对一转账或 [爱发电](https://afdian.com/) 完成；
+- 订阅页：[`pay/山野精灵.晴雨表_订阅与授权.html`](pay/山野精灵.晴雨表_订阅与授权.html) —— 价格、微信号 `chat-tea`、扫码加好友、授权流程与 FAQ 一页说明，可离线打开；不提供公开收款码，付款通过加好友后一对一转账或 [爱发电](https://afdian.com/) 完成；
 - 授权码为 ECDSA P-256 签名、可绑定设备，由作者签发（私钥不入库）。
+
+## AI 工具接口
+
+`api/openapi.yaml` 提供 provider-neutral 的 OpenAPI 3.1.1 契约，包含农历/节气查询和带 Token 的逐小时天气预览，可导入支持 OpenAPI 工具调用的 AI 平台。运行方式、授权边界与数据说明见 [api/README.md](api/README.md)。静态 H5 不托管 Node API；天气工具接口需部署在自有 HTTPS 服务上。
 
 ## 数据来源与免责
 
@@ -75,12 +79,10 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 见 [LICENSE](LICENSE)。应用 © 山野精灵 SAYELF。
 
-## 1.1.0 更新
+## 1.2.0 更新
 
-- 品牌图标已嵌入单文件应用，并用于天气导出与分享卡片。
-- 分享到期仍可用，图卡包含 SAYELF 品牌、“生成我的晴雨表”及同款二维码。
-- 在线服务依据首次成功生成发放邀请双方各7天 Pro，每人按北京时间自然月最多获得30天。
-- 主界面展示24节气；农历日期默认折叠。
-- 在线版在项目根目录运行 `node server/server.cjs`（Node.js 22+）。离线分享需设置一个可访问的 HTTPS 地址，在线奖励需要同域部署服务。
-- 包含订阅页、原微信联系方式及授权流程；未接自动支付。
-- 在线版以浏览器 Cookie 识别邀请用户，不具备账号级反刷；部署说明见 RUN-1.1.md。
+- 提供 [稳定的最新版压缩包下载](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip) 和 [在线 H5 入口](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)。
+- 使用者提交的二维码裁剪后放入订阅页，微信号统一为 `chat-tea`；主应用订阅入口可直接打开二维码。
+- 新增 OpenAPI 3.1.1 接口契约：日期/节气查询公开可用；天气接口需自行配置服务端 `API_TOKEN`。
+- 通过 GitHub Pages 发布静态页面；邀请奖励台账和 AI 天气服务仍由自有 Node 服务承载。
+- 继承 1.1.0：免费分享与“生成我的晴雨表”同款二维码、有效邀请双方奖励、每人每月最多 30 天、24 节气及默认折叠农历。

@@ -1,0 +1,117 @@
+openapi: 3.1.1
+info:
+  title: SAYELF 晴雨表 API
+  version: 1.2.0
+  description: >-
+    Provider-neutral AI tool API for Chinese lunar dates, solar terms, and an explicitly requested
+    weather preview. Calendar responses contain public calendar data only. Weather requests send
+    the supplied coordinates to Open-Meteo and are never written to the local reward ledger.
+servers:
+  - url: https://your-domain.example
+    description: Replace with the HTTPS origin where the Node service is deployed.
+paths:
+  /api/v1/calendar/day:
+    get:
+      operationId: getCalendarDay
+      summary: Get the lunar date and solar term for a Gregorian date
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema: { type: string, format: date, example: '2026-02-17' }
+      responses:
+        '200':
+          description: Calendar information for one date
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [date, lunarDate, solarTerm]
+                properties:
+                  date: { type: string, format: date }
+                  lunarDate: { type: string, example: '二〇二六年正月初一' }
+                  solarTerm: { type: [string, 'null'], example: null }
+        '400': { description: Invalid or unsupported date }
+  /api/v1/calendar/solar-terms:
+    get:
+      operationId: listSolarTerms
+      summary: List the 24 Chinese solar terms for a year
+      parameters:
+        - name: year
+          in: query
+          required: true
+          schema: { type: integer, minimum: 1901, maximum: 2099, example: 2026 }
+      responses:
+        '200':
+          description: Solar term names and Gregorian dates in Asia/Shanghai
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [year, timezone, terms]
+                properties:
+                  year: { type: integer }
+                  timezone: { type: string, const: Asia/Shanghai }
+                  terms:
+                    type: array
+                    minItems: 24
+                    maxItems: 24
+                    items:
+                      type: object
+                      required: [date, name]
+                      properties:
+                        date: { type: string, format: date }
+                        name: { type: string, example: 立春 }
+        '400': { description: Unsupported year }
+  /api/v1/weather/preview:
+    post:
+      operationId: getWeatherPreview
+      summary: Get hourly precipitation and cloud cover for explicit coordinates
+      description: >-
+        Requires an operator-configured API_TOKEN. The requested latitude and longitude are sent
+        to Open-Meteo; only the requested day's hourly result is returned. No application history,
+        referral identity, or reward ledger is accessed.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [latitude, longitude]
+              properties:
+                latitude: { type: number, minimum: -90, maximum: 90, example: 29.53 }
+                longitude: { type: number, minimum: -180, maximum: 180, example: 106.57 }
+                date: { type: string, format: date, description: Defaults to today in Asia/Shanghai; allowed window is 7 days back through 3 days ahead. }
+      responses:
+        '200':
+          description: Hourly weather for the selected date
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [source, date, timezone, precipitationTotalMm, hourly]
+                properties:
+                  source: { type: string, const: Open-Meteo }
+                  date: { type: string, format: date }
+                  timezone: { type: string, const: Asia/Shanghai }
+                  precipitationTotalMm: { type: number }
+                  hourly:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        time: { type: string }
+                        precipitationMm: { type: [number, 'null'] }
+                        cloudCoverPercent: { type: [number, 'null'] }
+        '400': { description: Invalid date or coordinates }
+        '401': { description: Missing or invalid bearer token }
+        '503': { description: Weather API token is not configured on the service }
+        '502': { description: Upstream weather provider unavailable }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API token

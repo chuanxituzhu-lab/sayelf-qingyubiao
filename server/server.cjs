@@ -1,6 +1,8 @@
-// Node.js 22+, standard library only. Single process with an atomic local ledger.
+// Node.js 22+; no npm install required. Calendar library is bundled locally.
+// Single process with an atomic local ledger.
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {monthKey,complete}=require('./rewards.cjs');
+const {createAiApiHandler}=require('./plugins/ai-api.cjs');
 const PORT=Number(process.env.PORT||8000),HOST=process.env.HOST||'127.0.0.1';
 const home=new URL(process.env.PUBLIC_URL||`http://localhost:${PORT}/`);
 if(!['http:','https:'].includes(home.protocol)||home.username||home.password)throw Error('PUBLIC_URL must be an HTTP(S) URL');
@@ -20,6 +22,7 @@ function session(req,res){
 function state(id,extra={}){const u=db.users[id];return {code:u.code,home:home.href,proUntil:u.proUntil,monthDays:u.months[monthKey(new Date())]||0,generated:!!u.generated,...extra};}
 function json(res,status,o){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(o));}
 async function body(req){let s='';for await(const c of req){s+=c;if(s.length>4096)throw Error('Request too large');}return JSON.parse(s||'{}');}
+const handleAiApi=createAiApiHandler({apiToken:process.env.API_TOKEN,readJson:body});
 function weatherURL(raw){
   const u=new URL(raw),archive=u.hostname==='archive-api.open-meteo.com';
   if(u.protocol!=='https:'||u.port||u.username||u.password||u.hash||!['api.open-meteo.com','archive-api.open-meteo.com'].includes(u.hostname)||u.pathname!==(archive?'/v1/archive':'/v1/forecast'))throw Error('Invalid weather URL');
@@ -35,6 +38,8 @@ const server=http.createServer(async(req,res)=>{
   res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
   try{
     const u=new URL(req.url,'http://local');
+    const aiResult=await handleAiApi(req,u);
+    if(aiResult)return json(res,aiResult.status,aiResult.body);
     if(u.pathname==='/api/state'&&req.method==='GET'){const id=session(req,res);return json(res,200,state(id));}
     if(u.pathname==='/api/weather'&&req.method==='GET'){
       const target=weatherURL(u.searchParams.get('url')),id=session(req,res);
@@ -59,6 +64,16 @@ const server=http.createServer(async(req,res)=>{
     if(req.method==='GET'&&(u.pathname==='/'||decodeURIComponent(u.pathname)==='/山野精灵.晴雨表.html')){
       res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});
       return res.end(fs.readFileSync(path.join(__dirname,'../templates/山野精灵.晴雨表.html')));
+    }
+    const payFiles={
+      '/pay/山野精灵.晴雨表_订阅与授权.html':['山野精灵.晴雨表_订阅与授权.html','text/html; charset=utf-8'],
+      '/pay/微信二维码.jpg':['微信二维码.jpg','image/jpeg'],
+    };
+    const publicPath=decodeURIComponent(u.pathname);
+    if(req.method==='GET'&&payFiles[publicPath]){
+      const [name,type]=payFiles[publicPath];
+      res.writeHead(200,{'Content-Type':type,'Cache-Control':'public, max-age=3600'});
+      return res.end(fs.readFileSync(path.join(__dirname,'../pay',name)));
     }
     json(res,404,{error:'Not found'});
   }catch(e){json(res,400,{error:'请求未完成：'+e.message});}
