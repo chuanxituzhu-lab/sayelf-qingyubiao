@@ -6,7 +6,7 @@ description: 全国通用单文件天气晴雨表：逐日国标气象符号图�
 description_zh: 山野精灵.晴雨表 —— 把每天的降水画成国标气象符号日历，支持全国定位、未来三天预报（虚线显示、到点自动更正为实测）、按行业阈值给出可作业/有条件/停工建议，可导出 PNG/PDF、生成微信/抖音/小红书分享长图。数据保存在本地浏览器，无需注册登录。
 description_en: A single-file weather calendar app that renders daily precipitation as GB/T-28592 weather icons, with year/month/AM-PM views, industry-specific work-decision advice (proceed/caution/stop), PNG/PDF export, and share-card generation for WeChat/Douyin/Xiaohongshu. Data stays in the local browser.
 category: tools
-version: 1.2.1
+version: 1.2.2
 author: 山野精灵 SAYELF
 license: MIT
 ---
@@ -58,7 +58,7 @@ license: MIT
 - 授权校验为客户端软锁，定位是"防误用"而非"防破解"。
 - 天气数据为再分析/数值预报，仅供记录与决策参考，不构成官方气象证明（官方值可用「上下午分段」里的校订功能手工填入）。
 
-## 1.2.1 更新
+## 1.2.2 更新
 - 按 RUN-1.1.md 运行离线应用或 Node.js 邀请服务。
 - 分享始终免费，邀请有效生成后双方各得7天 Pro，每人每月最多30天。
 - 节气在主界面显示，农历日期默认折叠。

@@ -23,12 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/configure-pages@v6
+      - name: Assemble the public H5 site
+        run: |
+          mkdir -p _site
+          cp index.html _site/index.html
+          cp -R assets pay templates _site/
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: |
-            index.html
-            assets
-            pay
-            templates
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v5

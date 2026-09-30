@@ -79,7 +79,7 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 见 [LICENSE](LICENSE)。应用 © 山野精灵 SAYELF。
 
-## 1.2.1 更新
+## 1.2.2 更新
 
 - 提供 [稳定的最新版压缩包下载](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip) 和 [在线 H5 入口](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)。
 - 使用者提交的二维码裁剪后放入订阅页，微信号统一为 `chat-tea`；主应用订阅入口可直接打开二维码。
