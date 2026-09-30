@@ -8,6 +8,7 @@ description_en: A single-file weather calendar app that renders daily precipitat
 category: tools
 version: 1.0.0
 author: 山野精灵 SAYELF
+license: MIT
 ---
 
 # 山野精灵.晴雨表
