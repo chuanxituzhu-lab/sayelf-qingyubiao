@@ -291,7 +291,7 @@ button.pri:active{background:#0e3c69}
     <div class="drow"><label>授权码</label><input id="licIn" placeholder="QY-…" spellcheck="false"></div>
     <div class="dact">
       <button onclick="copyPayText()">复制付款说明</button>
-      <button id="btnPay" onclick="goPay()">收款页</button>
+      <button id="btnPay" onclick="goPay()">订阅页</button>
       <button onclick="closeSub()">关闭</button>
       <button class="pri" onclick="doActivate()">激活</button>
     </div>
@@ -1337,11 +1337,12 @@ function fbCopy(t){
 var TRIAL_DAYS=15;
 var GATE_SOFT=true;            /* 改成 false 则到期后连查看一起锁（不建议，容易招负面口碑） */
 var BRAND='';                  /* 分享图 / 导出页脚的落款，例如 'by 你的名字'，留空则不显示 */
-/* 收款入口：填一项即可，弹窗里的「如何订阅」与「收款页」按钮会据此变化
-   afd  = 爱发电主页，例如 https://afdian.com/a/sayelf   （推荐，支持微信付款、平台担保）
+/* 订阅入口：填一项即可，弹窗里的「如何订阅」与「订阅页」按钮会据此变化
    page = 订阅与授权页地址（本机文件 山野精灵.晴雨表_订阅与授权.html 或网址）
-   wx   = 微信收款码图片链接（公开售卖请用「经营收款码」，不要用个人码收远程订单款） */
-var PAY={wx:'',afd:'',page:'',name:APP_NAME};
+   afd  = 爱发电主页，例如 https://afdian.com/a/sayelf   （支持微信付款、平台担保）
+   wxId = 微信号（填了之后弹窗里直接显示并复制给对方，这是主要联系方式）
+   wx   = 微信加好友二维码图片链接（可选，仅作展示，一般放在订阅页上） */
+var PAY={page:'',afd:'',wxId:'',wx:'',name:APP_NAME};
 var LIC_PUB={x:'095MsAc3EGQzM1i7oR5xEOIuALe5fkVobz7luU4s17c',y:'sQi57wBuqTEmbQrLBFUEBdT2EVfWlhI994zjCig82Qw'};
 var LKEY='cq_nanan_lic_v1';
 var LIC=null;                  /* {exp:'YYYYMMDD',tier:'月费'|'年费',code:'',mid:'*'} */
@@ -1435,22 +1436,30 @@ function licTip(){
   var t=document.getElementById('licTip'), s=[], e=[];
   if(PAY.page)e.push('<a href="'+PAY.page+'" target="_blank" rel="noopener">订阅与授权页</a>');
   if(PAY.afd)e.push('<a href="'+PAY.afd+'" target="_blank" rel="noopener">爱发电（可用微信付款）</a>');
-  if(PAY.wx)e.push('<a href="'+PAY.wx+'" target="_blank" rel="noopener">微信收款码</a>');
-  s.push(e.length?('付款入口：'+e.join(' · ')):'付款入口请见作者公布的收款页（点下方「收款页」按钮）');
+  if(PAY.wxId)e.push('加微信好友 <b>'+PAY.wxId+'</b>'
+      +(PAY.wx?(' <a href="'+PAY.wx+'" target="_blank" rel="noopener">看二维码</a>'):''));
+  s.push(e.length?('订阅方式：'+e.join(' · ')):'订阅方式请见下方「订阅页」（或先用「复制付款说明」把订单信息发给作者）');
   s.push('· 付款后把收到的授权码粘贴到上面即可，历史记录不会丢。');
   s.push('· 本机码 <b>'+mid()+'</b>：若要防止授权码被转发，付款时把这个码告诉作者，可把授权码绑定到本机。');
   s.push('· 换电脑 / 清缓存不会丢天气数据（数据在 localStorage，可用「数据 JSON」导出备份）。');
   t.innerHTML=s.join('<br>');
 }
-/* 打开收款入口：订阅页 → 爱发电 → 微信收款码，取第一个已配置的 */
+/* 打开订阅入口：订阅页 → 爱发电；都没填但留了微信号时，直接给出可复制的联系信息 */
 function goPay(){
-  var u=PAY.page||PAY.afd||PAY.wx;
+  var u=PAY.page||PAY.afd;
   if(u){window.open(u,'_blank','noopener');return;}
-  alert('收款入口还没配置。\n\n请在应用源码顶部的 PAY 处填一项：\n'
-    +'  afd  = 爱发电主页（推荐，支持微信付款）\n'
-    +'  page = 订阅与授权页地址\n'
-    +'  wx   = 微信收款码图片链接\n\n'
-    +'填好后这个按钮会直接打开付款页；也可以先用「复制付款说明」把订单信息发给作者。');
+  if(PAY.wxId||PAY.wx){
+    var m='加微信好友订阅：\n\n微信号：'+(PAY.wxId||'（见作者公布的二维码）')+'\n'
+      +'备注写「晴雨表」即可。\n\n本机码：'+mid()+'（发消息时带上，可把授权码绑定到本机）';
+    copyText(m);
+    alert(m+'\n\n（以上内容已复制到剪贴板）');
+    return;
+  }
+  alert('订阅入口还没配置。\n\n请在应用源码顶部的 PAY 处填一项：\n'
+    +'  wxId = 微信号（最简）\n'
+    +'  afd  = 爱发电主页\n'
+    +'  page = 订阅与授权页地址\n\n'
+    +'填好后这个按钮会直接打开订阅页或给出微信号；也可以先用「复制付款说明」把订单信息发给作者。');
 }
 function copyPayText(){
   var txt='我要订阅'+PAY.name+'：'+(pickT==='Y'?'年费 ¥12/年':'月费 ¥5/月')+

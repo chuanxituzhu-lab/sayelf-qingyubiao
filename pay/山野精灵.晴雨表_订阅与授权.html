@@ -42,13 +42,12 @@ h1,h2,h3{line-height:1.3}
 .pc i{font-style:normal;font-size:11px;color:var(--tx3)}
 .pc .fx{font-size:11px;color:var(--tx2);margin-top:5px;padding-top:6px;border-top:1px dashed var(--line2);line-height:1.5}
 
-/* 收款方式 */
+/* 联系与付款 */
 .pays{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .pay{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:9px}
 .pay.primary{border:2px solid var(--info);background:var(--infoBg)}
 .pay h3{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
 .pay .badge{font-size:10px;padding:1px 7px;border-radius:99px;background:var(--okBg);color:var(--ok);font-weight:400}
-.pay .badge.b2{background:var(--warnBg);color:var(--warn)}
 .pay .desc{font-size:12px;color:var(--tx2);line-height:1.6}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 14px;border-radius:8px;border:1px solid var(--line2);background:var(--bg);color:var(--tx);font-size:13px;cursor:pointer;font-family:inherit;text-align:center;width:100%;transition:background .12s}
 .btn:hover{background:#eee}
@@ -57,12 +56,14 @@ h1,h2,h3{line-height:1.3}
 .btn[disabled]{opacity:.5;cursor:not-allowed}
 .btn.small{width:auto;padding:6px 12px;font-size:12px}
 
-/* 收款码 */
+/* 微信二维码 */
 .qrbox{background:#fff;border:1px dashed var(--line2);border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:196px;justify-content:center;text-align:center}
 .qrbox img{width:168px;height:168px;object-fit:contain;border-radius:6px;image-rendering:pixelated}
 .qrbox .ph{font-size:12px;color:var(--tx3);line-height:1.7}
 .qrbox .ph code{background:var(--bg2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:11px;font-family:ui-monospace,Consolas,monospace}
 .qrbox.ok{border-style:solid;border-color:var(--line)}
+.wxid{font-size:12.5px;color:var(--tx2);text-align:center;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 9px;width:100%}
+.wxid b{font-family:ui-monospace,Consolas,monospace;color:var(--tx);letter-spacing:.4px;word-break:break-all}
 
 /* 步骤 */
 .steps{display:flex;flex-direction:column;gap:0}
@@ -150,40 +151,42 @@ details p{font-size:12.5px;color:var(--tx2);margin-top:6px;padding-left:17px}
     <div class="note">授权码采用 ECDSA P-256 签名，一对一签发，可绑定到指定设备。付款后由作者手工发放，通常 1 个工作日内。</div>
   </div>
 
-  <!-- 收款方式 -->
+  <!-- 联系与付款 -->
   <div class="card">
-    <h2>收款方式</h2>
+    <h2>联系与付款</h2>
     <div class="pays">
       <div class="pay primary">
-        <h3>爱发电 <span class="badge">推荐 · 支持微信支付</span></h3>
-        <div class="desc">无需注册即可用<b>微信 / 支付宝</b>付款，由平台担保交易。付款备注里写上你的<b>本机码</b>，方便对号发码。</div>
+        <h3>加微信好友 <span class="badge">推荐 · 最快</span></h3>
+        <div class="desc">扫码加好友（或搜微信号），备注 <b>「晴雨表」</b>；说明档位后 <b>微信转账 / 发红包</b> 即可。作者确认收款后直接把授权码发给你。</div>
+        <div class="qrbox" id="qrbox">
+          <img id="qrImg" alt="微信加好友二维码" style="display:none">
+          <div class="ph" id="qrPh"></div>
+        </div>
+        <div class="wxid">微信号 <b id="wxIdTxt">—</b></div>
+        <button class="btn small" id="wxIdBt" onclick="copyWxId()">复制微信号</button>
+      </div>
+      <div class="pay">
+        <h3>爱发电 <span class="badge">支持微信 / 支付宝</span></h3>
+        <div class="desc">不想加好友就走这里：无需注册，用<b>微信 / 支付宝</b>付款，由平台担保交易。付款备注里写上你的<b>本机码</b>，方便对号发码。</div>
         <button class="btn pri" id="afdBt" onclick="goAfd()">前往爱发电付款</button>
         <div class="note" id="afdNote"></div>
       </div>
-      <div class="pay">
-        <h3>微信扫码 <span class="badge b2">需经营收款码</span></h3>
-        <div class="qrbox" id="qrbox">
-          <img id="qrImg" alt="收款二维码" style="display:none">
-          <div class="ph" id="qrPh"></div>
-        </div>
-        <div class="note">扫码后请在备注里写<b>本机码</b>。</div>
-      </div>
     </div>
-    <div class="note" style="margin-top:11px">若两条路都还没弄好，也可以先点下面的「复制付款说明」，把内容发给作者确认付款方式。</div>
+    <div class="note" style="margin-top:11px">两条路都还没弄好也没关系：点下面的「生成付款说明」，把内容发给作者确认付款方式即可。</div>
   </div>
 
   <!-- 流程 -->
   <div class="card">
     <h2>授权流程</h2>
     <div class="steps">
-      <div class="step"><div class="k">1</div><div class="t"><b>抄下本机码</b><br><span>打开晴雨表 → 点顶部「试用中 · 还剩 N 天」的胶囊 → 弹窗里有一串 <b>本机码</b>。付款时把它写在备注里，授权码就能绑定到你这台设备。</span></div></div>
-      <div class="step"><div class="k">2</div><div class="t"><b>付款</b><br><span>爱发电或微信扫码，金额 ¥12（年费）/ ¥5（月费）。</span></div></div>
-      <div class="step"><div class="k">3</div><div class="t"><b>把付款凭证发给作者</b><br><span>用下面的「复制付款说明」生成一段文字，连同付款截图一起发给作者。</span></div></div>
+      <div class="step"><div class="k">1</div><div class="t"><b>抄下本机码</b><br><span>打开晴雨表 → 点顶部「试用中 · 还剩 N 天」的胶囊 → 弹窗里有一串 <b>本机码</b>。发消息时带上它，授权码就能绑定到你这台设备。</span></div></div>
+      <div class="step"><div class="k">2</div><div class="t"><b>加微信好友</b><br><span>扫上面的二维码，或搜索微信号添加；备注写 <b>「晴雨表」</b>，方便作者分辨来意。</span></div></div>
+      <div class="step"><div class="k">3</div><div class="t"><b>说明档位并付款</b><br><span>把下面「生成付款说明」的文字发给作者，确认后微信转账 / 发红包 ¥12（年费）或 ¥5（月费）；也可以走爱发电。</span></div></div>
       <div class="step"><div class="k">4</div><div class="t"><b>收授权码并激活</b><br><span>作者签发后把 <code>QY-xxxx-xxxx</code> 形式的授权码发给你 → 粘进晴雨表的弹窗 → 点「激活」。换电脑后重新粘一次即可，天气数据不丢。</span></div></div>
     </div>
   </div>
 
-  <!-- 复制付款说明 -->
+  <!-- 生成付款说明 -->
   <div class="card">
     <h2>第 3 步的工具：生成付款说明</h2>
     <div class="gen">
@@ -206,10 +209,10 @@ details p{font-size:12.5px;color:var(--tx2);margin-top:6px;padding-left:17px}
         </select>
       </div>
       <div>
-        <label for="inPay">付款渠道</label>
+        <label for="inPay">付款方式</label>
         <select id="inPay">
+          <option value="微信转账（已加好友）">微信转账（已加好友）</option>
           <option value="爱发电">爱发电</option>
-          <option value="微信扫码">微信扫码</option>
         </select>
       </div>
     </div>
@@ -225,7 +228,8 @@ details p{font-size:12.5px;color:var(--tx2);margin-top:6px;padding-left:17px}
   <div class="card">
     <h2>常见问题</h2>
     <details><summary>为什么还要授权码，不是免费软件吗？</summary><p>查看天气、记录、导出自己的数据是<b>永久免费</b>的。收费的只有「导出成图片 / PDF、打印、一键分享、另存为」这几个把成果带走的功能——这正好是上班族排期、施工队留证、农户记账真正在用的部分。软件完全离线运行，没有服务器成本转嫁给你，所以定价可以做到 ¥1/月。</p></details>
-    <details><summary>付款后多久拿到授权码？</summary><p>手工签发，通常 1 个工作日内。如果超过 24 小时没收到，用下面的邮箱催一下即可。</p></details>
+    <details><summary>付款后多久拿到授权码？</summary><p>加好友后当面沟通最快，通常几分钟内；走爱发电或作者不在线时，一般 1 个工作日内。超过 24 小时没收到，用下面的联系方式催一下即可。</p></details>
+    <details><summary>为什么要加微信好友，不能直接扫码付钱吗？</summary><p>加好友沟通更稳：能先确认你用的是哪个版本、需不需要绑定设备，付款后也能直接给你发授权码，出问题找得到人。嫌麻烦也可以走爱发电（支持微信 / 支付宝，平台担保），效果一样。</p></details>
     <details><summary>换了电脑，授权码还有效吗？</summary><p>有效。授权按<b>到期日</b>计，不限制次数；只要授权码没绑设备就能任意设备使用。若当初绑定了旧机器的本机码，把新机器的本机码告诉作者换绑即可（免费）。</p></details>
     <details><summary>授权码被转发给别人用会怎样？</summary><p>技术上可以，但我们不推荐也不阻止。付款时提供本机码即可把授权码锁死在这一台设备上，转发出去也激活不了。多人使用请按人数订阅，这是这个小工具能活下去的前提。</p></details>
     <details><summary>到期后会怎样？我的数据会被锁吗？</summary><p>不会。到期后只是「导出图片 / PDF、打印、分享、另存为」变成需要授权，<b>查看、记录、导出数据 JSON 永远免费</b>。你随时可以自己备份数据。</p></details>
@@ -236,6 +240,7 @@ details p{font-size:12.5px;color:var(--tx2);margin-top:6px;padding-left:17px}
   <div class="ft">
     联系方式：<a id="mailLink" href="#">—</a><br>
     山野精灵.晴雨表 · 单文件离线天气日历 · 数据来源 Open-Meteo<br>
+    ⚠ 请只通过本页公布的方式联系作者，谨防他人冒充收费。<br>
     本页由作者自建，不收集任何信息；本机码只在你的浏览器里生成，不会自动上传。
   </div>
 </div>
@@ -246,20 +251,23 @@ details p{font-size:12.5px;color:var(--tx2);margin-top:6px;padding-left:17px}
 /* ================================================================
    作者配置区 —— 只改这一段就能上线
    ----------------------------------------------------------------
-   afdian      爱发电主页链接，例如 https://afdian.com/a/sayelf
-   afdianItem  爱发电某个商品/方案页的直达链接（可选，填了优先用）
-   wxQr        微信收款码。三种写法：
-                 ''                         → 自动读同目录的「收款码.png」
+   wxId        微信号（建议填，对方可以直接搜索添加）
+   wxAdd       微信加好友二维码。三种写法：
+                 ''                         → 自动读同目录的「微信二维码.png」
                  'https://...'              → 网络图片
                  'data:image/png;base64,...'→ 内嵌单文件（见工具脚本）
+   wxAddLocal  同目录兜底的图片文件名
+   afdian      爱发电主页链接，例如 https://afdian.com/a/sayelf
+   afdianItem  爱发电某个商品/方案页的直达链接（可选，填了优先用）
    contact     联系方式（邮箱 / 公众号 / 微信号）
    b2b         B 端定制那一栏的文案
    ================================================================ */
 var CFG = {
+  wxId:       '',
+  wxAdd:      '',
+  wxAddLocal: '微信二维码.png',
   afdian:     '',
   afdianItem: '',
-  wxQr:       '',
-  wxQrLocal:  '收款码.png',
   contact:    '',
   owner:      '山野精灵 · SAYELF',
   b2b:        { price:'面议', unit:'按行业规程定制阈值',
@@ -288,11 +296,35 @@ $('b2bFx').textContent    = CFG.b2b.fx;
   if(CFG.contact){
     a.textContent=CFG.contact;
     if(/^[\w.+-]+@[\w-]+\.[\w.]+$/.test(CFG.contact)) a.href='mailto:'+CFG.contact
-      +'?subject='+encodeURIComponent('订阅 山野精灵.晴雨表')+'&body='+encodeURIComponent('本机码：\n付款渠道：\n付款金额：');
+      +'?subject='+encodeURIComponent('订阅 山野精灵.晴雨表')+'&body='+encodeURIComponent('本机码：\n付款方式：\n付款金额：');
   }else{
     a.textContent='（待作者填写：CFG.contact）';
   }
 })();
+
+/* 微信加好友二维码：三级回退 —— 配置链接 / 同目录图片 / 说明占位 */
+(function(){
+  var src=CFG.wxAdd||CFG.wxAddLocal, img=$('qrImg'), ph=$('qrPh');
+  img.onload=function(){ img.style.display=''; ph.style.display='none'; $('qrbox').className='qrbox ok'; };
+  img.onerror=function(){
+    img.style.display='none'; ph.style.display=''; $('qrbox').className='qrbox';
+    ph.innerHTML='微信加好友二维码<br><span style="font-size:11px">把微信「我的二维码」图片放到本页同目录，命名 <code>'
+      + CFG.wxAddLocal + '</code><br>或在 <code>CFG.wxAdd</code> 填链接</span>'
+      + '<br><span style="font-size:11px;display:inline-block;margin-top:7px">（没图也可以：让对方直接搜微信号添加）</span>';
+  };
+  img.src=src;
+})();
+
+/* 微信号展示与复制 */
+(function(){
+  var t=$('wxIdTxt'), b=$('wxIdBt');
+  if(CFG.wxId){ t.textContent=CFG.wxId; }
+  else{ t.textContent='（待作者填写 CFG.wxId）'; b.disabled=true; }
+})();
+function copyWxId(){
+  if(!CFG.wxId){ toast('作者还没填微信号'); return; }
+  copyTxt('微信号：'+CFG.wxId+'（加好友请备注「晴雨表」）');
+}
 
 /* 爱发电 */
 (function(){
@@ -304,20 +336,6 @@ $('b2bFx').textContent    = CFG.b2b.fx;
   }
 })();
 
-/* 收款码：三级回退 —— 配置链接 / 同目录图片 / 说明占位 */
-(function(){
-  var src=CFG.wxQr||CFG.wxQrLocal, img=$('qrImg'), ph=$('qrPh');
-  img.onload=function(){ img.style.display=''; ph.style.display='none'; $('qrbox').className='qrbox ok'; };
-  img.onerror=function(){
-    img.style.display='none'; ph.style.display=''; $('qrbox').className='qrbox';
-    ph.innerHTML='收款码位置<br><span style="font-size:11px">把图片放到本页同目录，命名 <code>'
-      + CFG.wxQrLocal + '</code><br>或在 <code>CFG.wxQr</code> 填链接</span>'
-      + '<br><span style="font-size:11px;color:#a06a12;display:inline-block;margin-top:7px">'
-      + '⚠ 公开收款请用<b>经营收款码</b>，不要用个人码收远程订单款</span>';
-  };
-  img.src=src;
-})();
-
 /* 付款说明生成 */
 function genPay(){
   var mid=($('inMid').value||'').trim().toUpperCase();
@@ -326,12 +344,12 @@ function genPay(){
   var L=[];
   L.push('我要订阅「山野精灵.晴雨表」');
   L.push('档位：'+tier);
-  L.push('付款渠道：'+pay);
+  L.push('付款方式：'+pay);
   L.push('本机码：'+(mid||'（待填，见晴雨表弹窗）'));
   if(place)L.push('当前地点：'+place);
-  L.push('付款时间：'+new Date().toLocaleString('zh-CN',{hour12:false}));
+  L.push('时间：'+new Date().toLocaleString('zh-CN',{hour12:false}));
   L.push('');
-  L.push('（把这段连同付款截图一起发给作者，即可收到授权码）');
+  L.push('（加微信好友后把这段发给作者，付款后即可收到授权码）');
   $('payTxt').textContent=L.join('\n');
   $('genHint').textContent = mid? '已带上本机码，可直接发送' : '还没填本机码（不填也能用，只是无法绑定设备）';
 }

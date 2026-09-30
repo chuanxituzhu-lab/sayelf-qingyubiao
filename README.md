@@ -54,11 +54,11 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 场景阈值表（`SCENES`）按客户作业规程逐条定制——建筑项目部、农场、物流车队各有自己的停工线。定制方法、损失台账（对账 / 保险佐证）口径见 [references/customization.md](references/customization.md)。
 
-## 订阅与收款
+## 订阅与授权
 
 应用自带 15 天全功能试用；到期后查看、记录、导出自己的数据**永久免费**，仅导出图片 / PDF、打印、分享、另存为需要授权码（¥12/年 · ¥5/月）。
 
-- 订阅页：[`pay/山野精灵.晴雨表_订阅与授权.html`](pay/山野精灵.晴雨表_订阅与授权.html) —— 价格、收款方式、授权流程、FAQ 一页说明，可离线打开；
+- 订阅页：[`pay/山野精灵.晴雨表_订阅与授权.html`](pay/山野精灵.晴雨表_订阅与授权.html) —— 价格、**加微信好友**、授权流程、FAQ 一页说明，可离线打开；不提供公开收款码，付款通过加好友后一对一转账或 [爱发电](https://afdian.com/) 完成；
 - 授权码为 ECDSA P-256 签名、可绑定设备，由作者签发（私钥不入库）。
 
 ## 数据来源与免责
