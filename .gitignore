@@ -1,0 +1,4 @@
+server/private-data/
+*.tmp
+node_modules/
+.env
