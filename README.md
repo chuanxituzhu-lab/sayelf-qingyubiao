@@ -62,7 +62,7 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 应用自带 15 天全功能试用；到期后查看、记录、导出自己的数据**永久免费**，分享永久免费；原¥12/年、¥5/月授权方式保留，仅专业导出 / 打印 / 场景决策等高级权益按原规则授权。
 
-- 订阅页：[`pay/山野精灵.晴雨表_订阅与授权.html`](pay/山野精灵.晴雨表_订阅与授权.html) —— 价格、微信号 `chat-tea`、扫码加好友、授权流程与 FAQ 一页说明，可离线打开；不提供公开收款码，付款通过加好友后一对一转账或 [爱发电](https://afdian.com/) 完成；
+- 订阅页：[`pay/山野精灵.晴雨表_订阅与授权.html`](pay/山野精灵.晴雨表_订阅与授权.html) —— 价格、微信号 `chat_tea`、扫码加好友、授权流程与 FAQ 一页说明，可离线打开；不提供公开收款码，付款通过加好友后一对一转账或 [爱发电](https://afdian.com/) 完成；
 - 授权码为 ECDSA P-256 签名、可绑定设备，由作者签发（私钥不入库）。
 
 ## AI 工具接口
@@ -79,6 +79,11 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 见 [LICENSE](LICENSE)。应用 © 山野精灵 SAYELF。
 
+## 1.2.6 更新
+
+- 更正主应用和订阅页显示的微信号为 `chat_tea`（含下划线），复制微信号按钮同步使用新账号。
+- 重建独立 H5 与最新版项目压缩包，下载入口继续指向 GitHub 最新 Release。
+
 ## 1.2.5 更新
 
 - 日历节气行下新增默认折叠的“分享有惊喜”入口，点开可查看奖励规则，并一键晒出晴雨表或复制做同款链接。
@@ -88,7 +93,7 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 - 维护者可运行 `node scripts/build-standalone-h5.cjs` 重新生成该单文件发行物。
 - 保留 [最新版完整压缩包](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip) 和 [在线 H5 入口](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)。
 - 独立 H5 内的分享入口、订阅说明和二维码链接使用项目在线地址；天气读取仍需网络，双向邀请奖励需自托管 Node 服务。
-- 使用者提交的二维码裁剪后放入订阅页，微信号统一为 `chat-tea`；主应用订阅入口可直接打开二维码。
+- 使用者提交的二维码裁剪后放入订阅页；主应用订阅入口可直接打开二维码。
 - 新增 OpenAPI 3.1.1 接口契约：日期/节气查询公开可用；天气接口需自行配置服务端 `API_TOKEN`。
 - 通过 GitHub Pages 发布静态页面；邀请奖励台账和 AI 天气服务仍由自有 Node 服务承载。
 - GitHub Actions 使用兼容 Node.js 24 的 Pages 部署动作。

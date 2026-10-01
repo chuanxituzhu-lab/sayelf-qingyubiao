@@ -64,5 +64,5 @@ license: MIT
 - 节气在主界面显示，农历日期默认折叠。
 - 原订阅页、微信联系方式和签名授权码流程保留。
 
-- H5入口与最新Release链接见README；微信联系方式为 `chat-tea`。
+- H5入口与最新Release链接见README；微信联系方式为 `chat_tea`。
 - AI接口见 `api/openapi.yaml`；静态页面不运行Node API。
