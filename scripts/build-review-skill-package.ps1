@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 $root = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $distRoot = [System.IO.Path]::GetFullPath((Join-Path $root 'dist'))
 $stageRoot = [System.IO.Path]::GetFullPath((Join-Path $distRoot 'review-skill-package'))
-$skillName = 'sayelf-qingyubiao-review'
+$skillName = 'sayelf-qingyubiao'
 $skillRoot = Join-Path $stageRoot $skillName
 $templateRoot = Join-Path $skillRoot 'templates'
 $reviewHtml = Join-Path $distRoot 'sayelf-qingyubiao-review.html'
@@ -27,6 +27,9 @@ if (!(Test-Path -LiteralPath $reviewHtml -PathType Leaf)) { throw "Missing revie
 $skillText = Get-Content -LiteralPath $sourceSkill -Raw
 foreach ($field in @('name', 'description', 'description_zh', 'description_en', 'version', 'author')) {
   if ($skillText -notmatch "(?m)^${field}:\s*\S") { throw "SKILL.md is missing required frontmatter field: $field" }
+}
+if ($skillText -notmatch "(?m)^name:\s*$([regex]::Escape($skillName))\s*$") {
+  throw "SKILL.md name must match the registered skill identifier: $skillName"
 }
 if ($skillText -match '(?i)chat_tea|二维码|扫码|afdian\.com|https?://|微信号') {
   throw 'SKILL.md contains a disallowed contact, QR, brand or outbound-link marker.'

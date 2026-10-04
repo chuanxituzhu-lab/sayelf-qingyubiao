@@ -1,5 +1,5 @@
 ---
-name: sayelf-qingyubiao-review
+name: sayelf-qingyubiao
 display_name: 晴雨表
 display_name_en: Weather Calendar
 description: "使用天气日历查看和记录逐日降水、二十四节气及农历日期；当用户提到晴雨表、天气日历、降水记录或分享导出时调用。"

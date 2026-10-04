@@ -83,7 +83,7 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 - 审核版保留晴雨表、天气、本地记录、导入导出和普通分享；不展示品牌图、邀请奖励、二维码、联系方式或外部导流入口。
 - GitHub Pages 根入口及原模板入口均打开审核版：[在线 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/) · [review.html](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/review.html)。
-- 最新 Release 提供[独立 H5](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)和[WorkBuddy 技能包](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-review-package.zip)。技能包内含平台必需的 `sayelf-qingyubiao-review/SKILL.md` 与 `templates/晴雨表.html`。
+- 最新 Release 提供[独立 H5](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)和[WorkBuddy 技能包](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-review-package.zip)。技能包内含平台必需的 `sayelf-qingyubiao/SKILL.md` 与 `templates/晴雨表.html`。
 - 重新构建 H5：`node scripts/build-review-h5.cjs`；重新构建技能包：`powershell -ExecutionPolicy Bypass -File scripts/build-review-skill-package.ps1`。定位和天气读取仍需网络。
 
 ## 1.2.6 更新
