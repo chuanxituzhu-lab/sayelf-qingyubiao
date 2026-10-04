@@ -79,6 +79,12 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 见 [LICENSE](LICENSE)。应用 © 山野精灵 SAYELF。
 
+## 1.2.7 审核版 H5
+
+- 新增独立的无推广审核版：保留晴雨表、天气、本地记录、导入导出和普通分享；不展示品牌图、邀请奖励、二维码、联系方式或外部导流入口。
+- GitHub Pages 审核版入口：[review.html](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/review.html)；单文件下载见 [最新 Release](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-review-h5.html)。
+- 重新构建：`node scripts/build-review-h5.cjs`。定位和天气读取仍需网络。
+
 ## 1.2.6 更新
 
 - 更正主应用和订阅页显示的微信号为 `chat_tea`（含下划线），复制微信号按钮同步使用新账号。

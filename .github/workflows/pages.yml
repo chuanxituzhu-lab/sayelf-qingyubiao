@@ -28,6 +28,9 @@ jobs:
           mkdir -p _site
           cp index.html _site/index.html
           cp -R assets pay templates _site/
+          node scripts/build-review-h5.cjs
+          node --test scripts/build-review-h5.test.cjs
+          cp dist/sayelf-qingyubiao-review.html _site/review.html
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
