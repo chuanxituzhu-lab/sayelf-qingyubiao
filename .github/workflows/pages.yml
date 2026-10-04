@@ -25,12 +25,12 @@ jobs:
       - uses: actions/configure-pages@v6
       - name: Assemble the public H5 site
         run: |
-          mkdir -p _site
-          cp index.html _site/index.html
-          cp -R assets pay templates _site/
+          mkdir -p _site/templates
           node scripts/build-review-h5.cjs
           node --test scripts/build-review-h5.test.cjs
+          cp dist/sayelf-qingyubiao-review.html _site/index.html
           cp dist/sayelf-qingyubiao-review.html _site/review.html
+          cp dist/sayelf-qingyubiao-review.html _site/templates/山野精灵.晴雨表.html
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site

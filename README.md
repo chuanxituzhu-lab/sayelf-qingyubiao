@@ -8,7 +8,7 @@
 
 更新细节、H5 / API 运行方式、奖励规则和数据边界见 [RUN-1.2.md](RUN-1.2.md)。
 
-[⬇️ 独立 H5（单文件直下）](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)　·　[📦 最新版完整 ZIP](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip)　·　[📱 在线打开 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)
+[⬇️ 审核版独立 H5（单文件直下）](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)　·　[📦 最新版完整 ZIP](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-latest.zip)　·　[📱 在线打开审核版 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)
 
 ## 它能做什么
 
@@ -25,9 +25,9 @@
 
 ## 快速开始
 
-1. 想直接使用：下载上方的[独立 H5](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)，不解压，浏览器直接打开；也可打开[在线 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)；
+1. 想直接使用：下载上方的[审核版独立 H5](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)，不解压，浏览器直接打开；也可打开[在线审核版 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/)；
 2. 允许定位（或点「重新定位」）；日历、节气和分享图可在本地使用，天气数据需要网络；
-3. 数据保存在你自己的浏览器里（localStorage）。独立 H5 的订阅与“做同款”入口已连到在线页面；双向邀请奖励需另外部署 Node 服务。
+3. 数据保存在你自己的浏览器里（localStorage）；天气数据需要网络。审核版保留日历、节气、普通分享和本地数据功能。
 
 > 手机上可用浏览器打开 H5，再选择「添加到主屏幕」。H5 沿用单文件 HTML5 主链，天气与分享可用；跨设备邀请奖励和 AI 天气接口需另行运行 Node 服务。
 
@@ -81,8 +81,9 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 
 ## 1.2.7 审核版 H5
 
-- 新增独立的无推广审核版：保留晴雨表、天气、本地记录、导入导出和普通分享；不展示品牌图、邀请奖励、二维码、联系方式或外部导流入口。
-- GitHub Pages 审核版入口：[review.html](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/review.html)；单文件下载见 [最新 Release](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-review-h5.html)。
+- 审核版保留晴雨表、天气、本地记录、导入导出和普通分享；不展示品牌图、邀请奖励、二维码、联系方式或外部导流入口。
+- GitHub Pages 根入口及原模板入口均打开审核版：[在线 H5](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/) · [review.html](https://chuanxituzhu-lab.github.io/sayelf-qingyubiao/review.html)。
+- 最新 Release 的独立 H5 下载文件名为 `sayelf-qingyubiao-h5.html`；审核版 ZIP 只包含该单文件应用：[下载审核版 ZIP](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-review-package.zip)。
 - 重新构建：`node scripts/build-review-h5.cjs`。定位和天气读取仍需网络。
 
 ## 1.2.6 更新
