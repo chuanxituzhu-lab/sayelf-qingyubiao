@@ -6,7 +6,7 @@ description: "使用天气日历查看和记录逐日降水、二十四节气及
 description_zh: "以日历呈现逐日降水，支持定位、二十四节气、折叠农历、本地记录和图片分享。"
 description_en: "View and record daily precipitation in a calendar with 24 solar terms, collapsed lunar dates, local records, and image sharing."
 category: tools
-version: 1.2.7
+version: 1.2.9
 author: 山野精灵
 ---
 
@@ -25,6 +25,7 @@ author: 山野精灵
 3. 农历日期默认折叠；用户需要时再展开查看，不推断或补造缺失日期。
 4. 用户想分享时，使用页面的分享按钮生成晴雨表图片；如果设备不支持直接分享，按页面提示保存图片或复制摘要。
 5. 解释天气与定位需要网络；浏览器记录保存在本地。数值预报和再分析数据不是气象台正式证明，不作为紧急天气预警。
+6. 本审核包只提供清洁静态 H5；自动邀请奖励需要完整项目中的自托管 Node 服务和私有账本，审核包本身不会记账或承诺奖励到账。
 
 ## 数据边界
 
