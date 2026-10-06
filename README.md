@@ -86,12 +86,13 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 - 最新 Release 提供[独立 H5](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-h5.html)和[WorkBuddy 技能包](https://github.com/chuanxituzhu-lab/sayelf-qingyubiao/releases/latest/download/sayelf-qingyubiao-review-package.zip)。技能包内含平台必需的 `sayelf-qingyubiao/SKILL.md` 与 `templates/晴雨表.html`。
 - 重新构建 H5：`node scripts/build-review-h5.cjs`；重新构建技能包：`powershell -ExecutionPolicy Bypass -File scripts/build-review-skill-package.ps1`。定位和天气读取仍需网络。
 
-## 1.2.8 自动邀请奖励
+## 1.2.9 自动邀请奖励与自托管服务
 
-- 完整项目的自托管 Node 服务会在好友首次成功同步天气并生成晴雨表时自动记账，邀请双方按当月剩余额度各获最多 7 天 Pro，每人每月封顶 30 天。
+- 完整项目的自托管 Node 服务会在好友首次成功同步天气并生成晴雨表时自动记账，新用户与直接邀请者按当月剩余额度各获最多 7 天 Pro；若直接邀请者还有上游邀请者，上游额外最多获 3 天，每人每月封顶 30 天，且不继续奖励三级上游。每 1 分按 1 天计算。
 - 邀请者累计 100 次有效新用户首次生成后，永久 Pro 自动生效；进度与实际权益在“分享有惊喜”中展示。点击和单纯转发不计入有效邀请。
 - 兑现需要运行完整项目的 Node 服务并使用同一域名访问完整 H5；当前 GitHub Pages 审核版与独立离线 H5不运行奖励 API，因此不会显示或承诺邀请奖励。
 - 有效邀请按服务端匿名浏览器账号统计（服务端设置 Cookie 保留期为 10 年，浏览器可能更早清除），不代表经过实名校验的 100 位自然人；清除 Cookie 或更换浏览器可能创建新的匿名账号，永久 Pro 也绑定该账号且可能无法找回。
+- 自托管启动与账本安全边界见 [`server/README.md`](server/README.md) 和 [`references/self-hosted-node.md`](references/self-hosted-node.md)。
 
 ## 1.2.6 更新
 

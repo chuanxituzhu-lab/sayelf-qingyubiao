@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {complete,monthKey,referralCount,applyLifetimeMilestones,LIFETIME_REFERRALS}=require('./rewards.cjs');
+const {complete,monthKey,referralCount,applyLifetimeMilestones,LIFETIME_REFERRALS,DIRECT_REWARD_DAYS,SECOND_LEVEL_REWARD_DAYS}=require('./rewards.cjs');
 function user(code){return {code,months:{},proUntil:new Date(0).toISOString(),generated:null,ref:null};}
 test('both parties, retries, cap, month rollover, self and invalid invite',()=>{
   const now=new Date('2026-09-30T10:00:00Z'),db={users:{a:user('a')},events:[]};
@@ -14,10 +14,40 @@ test('valid first generation credits Pro immediately from the event time',()=>{
   const now=new Date('2026-10-01T03:04:05Z'),db={users:{a:user('a'),b:user('b')},events:[]};
   db.users.b.ref='a';
   const result=complete(db,'b',now),expected=new Date(now.getTime()+7*86400000).toISOString();
-  assert.deepEqual(result,{awarded:true,inviterDays:7,inviteeDays:7,inviterReferrals:1,inviterLifetimePro:false,permanentGranted:false});
+  assert.deepEqual(result,{awarded:true,inviterDays:7,inviteeDays:7,upstreamDays:0,inviterReferrals:1,inviterLifetimePro:false,permanentGranted:false});
   assert.equal(db.users.a.proUntil,expected);
   assert.equal(db.users.b.proUntil,expected);
   assert.equal(db.events[0].at,now.toISOString());
+});
+test('direct referrals pay 7 days to both sides and the direct inviter parent gets 3 days only',()=>{
+  const now=new Date('2026-10-02T03:04:05Z'),db={users:{root:user('root'),direct:user('direct'),newcomer:user('newcomer'),third:user('third')},events:[]};
+  db.users.direct.ref='root';
+  db.users.newcomer.ref='direct';
+  let result=complete(db,'newcomer',now);
+  assert.equal(result.inviterDays,DIRECT_REWARD_DAYS);
+  assert.equal(result.inviteeDays,DIRECT_REWARD_DAYS);
+  assert.equal(result.upstreamDays,SECOND_LEVEL_REWARD_DAYS);
+  assert.equal(db.users.direct.months[monthKey(now)],7);
+  assert.equal(db.users.newcomer.months[monthKey(now)],7);
+  assert.equal(db.users.root.months[monthKey(now)],3);
+
+  db.users.third.ref='newcomer';
+  result=complete(db,'third',now);
+  assert.equal(result.inviterDays,7);
+  assert.equal(result.inviteeDays,7);
+  assert.equal(result.upstreamDays,3);
+  assert.equal(db.users.direct.months[monthKey(now)],10,'the intermediate inviter gets its own second-level reward');
+  assert.equal(db.users.root.months[monthKey(now)],3,'rewards stop after two referral edges');
+  assert.equal(db.users.newcomer.months[monthKey(now)],14,'a user keeps the 7-day invitee grant and earns 7 more for a direct invite');
+});
+test('second-level reward observes the same monthly 30-day cap',()=>{
+  const now=new Date('2026-10-02T03:04:05Z'),db={users:{root:user('root'),direct:user('direct')},events:[]};
+  db.users.direct.ref='root';
+  db.users.root.months[monthKey(now)]=29;
+  const child=user('child');child.ref='direct';db.users.child=child;
+  const result=complete(db,'child',now);
+  assert.equal(result.upstreamDays,1);
+  assert.equal(db.users.root.months[monthKey(now)],30);
 });
 test('100 valid first generations automatically grant permanent Pro once',()=>{
   const firstMonth=new Date('2026-09-30T10:00:00Z'),nextMonth=new Date('2026-10-01T00:00:00Z');

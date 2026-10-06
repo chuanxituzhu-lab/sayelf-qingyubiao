@@ -6,14 +6,14 @@ description: 全国通用单文件天气晴雨表：逐日国标气象符号图�
 description_zh: 山野精灵.晴雨表 —— 把每天的降水画成国标气象符号日历，支持全国定位、未来三天预报（虚线显示、到点自动更正为实测）、按行业阈值给出可作业/有条件/停工建议，可导出 PNG/PDF、生成微信/抖音/小红书分享长图。数据保存在本地浏览器，无需注册登录。
 description_en: A single-file weather calendar app that renders daily precipitation as GB/T-28592 weather icons, with year/month/AM-PM views, industry-specific work-decision advice (proceed/caution/stop), PNG/PDF export, and share-card generation for WeChat/Douyin/Xiaohongshu. Data stays in the local browser.
 category: tools
-version: 1.2.2
+version: 1.2.9
 author: 山野精灵 SAYELF
 license: MIT
 ---
 
 # 山野精灵.晴雨表
 
-把天气画成一本可以翻的日历。单文件 HTML 应用（`templates/山野精灵.晴雨表.html`），离线版无需后端，双击可用；在线邀请奖励需运行附带的服务。
+把天气画成一本可以翻的日历。单文件 HTML 应用（`templates/山野精灵.晴雨表.html`），离线版无需后端，双击可用；在线邀请奖励需运行附带的自托管 Node 服务（`server/server.cjs`）。服务只保存匿名会话、邀请码、有效生成事件和奖励账本，不读取浏览器本地天气记录。
 
 ## 技能指令
 
@@ -47,6 +47,12 @@ license: MIT
 - 用户在订阅对话框（页头订阅状态胶囊）填入形如 `QY-XXXX-XXXX` 的授权码点「激活」即解锁。
 - 授权码由作者（山野精灵 SAYELF）签发；购买与支持联系方式见订阅对话框内的付款说明。
 
+### 5. 自托管奖励服务
+1. 只在需要自动兑现邀请奖励时运行服务；静态 H5、GitHub Pages 和离线文件不能记账。
+2. 在项目根目录执行 `node server/server.cjs`。正式环境设置 `PUBLIC_URL` 为浏览器访问的 HTTPS 地址，并把私有 `DATA_DIR` 指向不被 Web 服务器公开的目录；完整部署和备份说明见 `server/README.md` 与 `references/self-hosted-node.md`。
+3. 好友通过同款邀请码首次成功同步天气并生成晴雨表时，服务端一次性结算：新用户 7 天、直接邀请者 7 天；若直接邀请者本身也有上游邀请者，上游仅得 3 天。每分按一天计，每个账号每个北京时间自然月最多入账 30 天，奖励最多向上追溯两级，不给三级分享计分。
+4. 直接邀请者累计 100 位有效新用户首次生成后，服务端自动写入永久 Pro；页面会显示累计进度和实际权益。点击、单纯转发、失败同步和重复生成不算有效事件。
+
 ## 排障
 1. 白屏/打不开 → 确认文件完整（约 700KB）；换 Chrome/Edge 打开。
 2. 数据不更新 → 检查网络；跨域报错时在文件目录起本地服务：`python -m http.server 8000`，再访问 `http://localhost:8000/山野精灵.晴雨表.html`。
@@ -60,9 +66,10 @@ license: MIT
 
 ## 1.2.2 更新
 - 按 RUN-1.1.md 运行离线应用或 Node.js 邀请服务。
-- 分享始终免费，邀请有效生成后双方各得7天 Pro，每人每月最多30天。
+- 分享始终免费；直接邀请有效生成后新用户与直接邀请者各得最多7天 Pro，直接邀请者的上游仅得最多3天，奖励最多两级，每人每月最多30天。
 - 节气在主界面显示，农历日期默认折叠。
 - 原订阅页、微信联系方式和签名授权码流程保留。
 
 - H5入口与最新Release链接见README；微信联系方式为 `chat_tea`。
 - AI接口见 `api/openapi.yaml`；静态页面不运行Node API。
+- 自托管 Node 服务的启动与数据边界见 `server/README.md`；完整技能引用见 `references/self-hosted-node.md`。

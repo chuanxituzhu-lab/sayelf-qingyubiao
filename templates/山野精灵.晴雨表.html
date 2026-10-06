@@ -179,7 +179,7 @@ button.pri:active{background:#0e3c69}
       <button onclick="document.getElementById('imp').click()">导入</button>
       <input type="file" id="imp" accept=".json" style="display:none" onchange="impJSON(this)">
     </div>
-    <div class="calendar-extra"><div class="terms" id="solarTerms"></div><div class="calendar-tools"><details><summary>农历日期</summary><input type="date" id="lunarDate" onchange="showLunarDate()"> <span id="lunarText"></span></details><details class="share-surprise" id="shareSurprise" ontoggle="shareSurpriseToggle(this)"><summary><span>分享有惊喜</span><small>晒晴雨表 · 好友做同款</small></summary><div class="surprise-panel"><strong>把你的城市晴雨表晒出来，朋友扫码生成自己的版本。</strong><p>分享永久免费。连接在线奖励服务后，好友首次成功生成，双方即时获得最多 7 天 Pro（每人每月最多 30 天）；累计 100 位有效新用户首次生成，邀请者自动获得永久 Pro。</p><div class="surprise-status" id="shareSurpriseStatus">分享永久免费；离线文件奖励服务未连接，好友仍可扫码做同款。</div><div class="surprise-actions"><button class="pri" onclick="openSh()">晒出我的晴雨表</button><button onclick="copyInvite()">复制做同款链接</button></div></div></details></div></div>
+    <div class="calendar-extra"><div class="terms" id="solarTerms"></div><div class="calendar-tools"><details><summary>农历日期</summary><input type="date" id="lunarDate" onchange="showLunarDate()"> <span id="lunarText"></span></details><details class="share-surprise" id="shareSurprise" ontoggle="shareSurpriseToggle(this)"><summary><span>分享有惊喜</span><small>晒晴雨表 · 好友做同款</small></summary><div class="surprise-panel"><strong>把你的城市晴雨表晒出来，朋友扫码生成自己的版本。</strong><p>分享永久免费。连接在线奖励服务后，好友与直接邀请者各自动获得最多 7 天 Pro；好友再邀请新人时，上游邀请者仅再得最多 3 天（最多二级，每人每月最多 30 天）；累计 100 位有效新用户首次生成，邀请者自动获得永久 Pro。</p><div class="surprise-status" id="shareSurpriseStatus">分享永久免费；离线文件奖励服务未连接，好友仍可扫码做同款。</div><div class="surprise-actions"><button class="pri" onclick="openSh()">晒出我的晴雨表</button><button onclick="copyInvite()">复制做同款链接</button></div></div></details></div></div>
     <div class="stat" id="stat"></div>
     <div class="tabs">
       <button id="tb0" class="on" onclick="tab(0)">年度视图</button>
@@ -273,7 +273,7 @@ button.pri:active{background:#0e3c69}
 <div class="dlg" id="shDlg" onclick="if(event.target===this)closeSh()">
   <div class="dbox" style="width:470px">
     <h3>一键分享</h3>
-    <div class="share-guide"><b>分享玩法：</b>晒出你的城市晴雨表，朋友扫码就能生成自己的版本。分享永久免费；新朋友首次生成后，双方即时获得最多 7 天 Pro（每人每月最多累计 30 天，需在线奖励服务启用）。</div>
+    <div class="share-guide"><b>分享玩法：</b>晒出你的城市晴雨表，朋友扫码就能生成自己的版本。分享永久免费；新朋友首次生成后，新用户与直接邀请者各自动获得最多 7 天 Pro，直接邀请者的上游仅得最多 3 天（最多二级，每人每月最多累计 30 天，需在线奖励服务启用）。</div>
     <div class="ds">选择平台尺寸后点「系统分享」；若没有弹出分享面板，点「保存图片」再到对应平台从相册发布。分享图已带「生成我的晴雨表」二维码。</div>
     <div class="shtip" id="inviteHint"></div><button onclick="copyInvite()">复制做同款邀请链接</button><details><summary>在线入口设置（离线分享时使用）</summary><input id="shareHome" type="url" placeholder="https://你的在线地址/"><button onclick="setShareHome()">保存入口</button></details><div class="shgrid" id="shGrid"></div>
     <div class="exprev"><canvas id="shPrev" width="240" height="320"></canvas></div>
@@ -12089,7 +12089,7 @@ function shareText(){
     '最大单日 '+st.max+'mm，暴雨及以上 '+st.storm+' 天，已记录 '+st.n+' 天。\n'+
     '逐日天气图案按 GB/T 28592-2012 降水量等级绘制，上午 05-12 时、下午 12-21 时分段记录。\n#山野精灵晴雨表 #晴雨表 #天气记录 #'+strip(PL.prov)+
     '\n'+(link?'朋友扫码即可生成自己的城市晴雨表。':'设置在线入口后，朋友即可扫码生成同款。')+
-    (GROWTH.ready?'新朋友首次完成生成后，双方自动获得最多7天Pro（每人每月最多30天）；累计100位有效新用户首次生成，邀请者自动获永久Pro。':'分享永久免费；邀请奖励需在线服务启用。')+
+    (GROWTH.ready?'新朋友首次完成生成后，新朋友与直接邀请者各自动获得最多7天Pro；若属于二级分享，上游邀请者再得最多3天（每人每月最多30天），累计100位有效新用户首次生成，邀请者自动获永久Pro。':'分享永久免费；邀请奖励需在线服务启用。')+
     '\n'+APP_IP+'\n生成我的晴雨表：'+(link||'在线入口尚未配置');
 }
 function openSh(){
@@ -12573,7 +12573,7 @@ function refreshGrowth(){
     var permanentNow=!!(s.lifetimePro&&previous&&!previous.lifetimePro);
     GROWTH.state=s;licPill();updateGrowthUI();
     if(permanentNow)toast('累计达到100位有效新用户，永久免费 Pro 已自动开通！');
-    else if(invited)toast('好友首次生成已自动记入 '+s.successfulInvites+'/100；双方奖励按本月剩余额度即时结算。');
+    else if(invited)toast('好友首次生成已自动记入 '+s.successfulInvites+'/100；您的本次奖励实际到账 '+(earned?'+'+earned+'天 Pro':'0天（本月额度已达上限）')+'。');
     else if(earned)toast('好友完成首次生成，奖励即时到账 +'+earned+'天 Pro；本月已累计 '+s.monthDays+'/30天。继续分享给朋友！');
     return s;
   }).catch(function(){}).finally(function(){growthRefreshPromise=null;});
@@ -12597,7 +12597,7 @@ function shareSurpriseToggle(el){
 function rewardStatus(){
   if(!GROWTH.ready)return '奖励服务未连接；作品分享、保存图片和扫码做同款仍可免费使用。';
   var s=GROWTH.state||{},count=Number(s.successfulInvites)||0,progress=s.lifetimePro?'已达成 '+count+'/100，永久 Pro 已生效':'有效新用户 '+count+'/100 · 再完成 '+Math.max(0,100-count)+' 位即可自动解锁永久 Pro',until=s.lifetimePro?'永久 Pro':(Date.parse(s.proUntil)>Date.now()?'Pro有效至 '+s.proUntil.slice(0,10):'暂无邀请 Pro');
-  return progress+' · 北京时间 '+(s.month||'本月')+' 已获 '+(s.monthDays||0)+'/30天 · '+until+'。好友首次生成后自动记账；权益绑定当前浏览器匿名账号，清除站点 Cookie 或换浏览器可能无法找回。本卡展开时自动刷新。';
+  return progress+' · 北京时间 '+(s.month||'本月')+' 已获 '+(s.monthDays||0)+'/30天 · '+until+'。直接邀请成功双方各得最多7天；好友再邀请新人时，上游仅再得最多3天，最多两级；奖励自动记账。本卡展开时自动刷新。';
 }
 function updateGrowthUI(){
   var summary=inviteSummary(),hint=document.getElementById('rewardHint'),invite=document.getElementById('inviteHint'),status=document.getElementById('shareSurpriseStatus');
@@ -12608,7 +12608,7 @@ function growthCompleted(){
   if(!GROWTH.ready)return;
   var records=cur().years[year]||{};
   if(!Object.keys(records).some(function(k){return records[k].day!=null;}))return;
-  growthAPI('complete',{}).then(function(s){GROWTH.state=s;licPill();updateGrowthUI();if(s.awarded){var d=Number(s.inviteeDays)||0;toast(d?'首次生成成功，邀请奖励自动到账 +'+d+'天 Pro；有效邀请已计入双方奖励。':'首次生成成功；本月奖励已达上限，本次未增加 Pro 天数。');}}).catch(function(e){toast(e.message);});
+  growthAPI('complete',{}).then(function(s){GROWTH.state=s;licPill();updateGrowthUI();if(s.awarded){var d=Number(s.inviteeDays)||0,a=Number(s.inviterDays)||0,p=Number(s.upstreamDays)||0;toast(d?'首次生成成功，您已自动到账 +'+d+'天 Pro；直接邀请者实际到账 +'+a+'天，二级上游实际到账 +'+p+'天。':'首次生成成功；本月奖励已达上限，本次未增加 Pro 天数。');}}).catch(function(e){toast(e.message);});
 }
 function sameStyleURL(){
   var home=(GROWTH.state&&GROWTH.state.home)||SHARE_HOME;
@@ -12644,7 +12644,7 @@ function inviteSummary(){
   if(!s)return '分享永久免费 · 在线邀请奖励服务未连接。';
   var count=Number(s.successfulInvites)||0,progress=s.lifetimePro?'永久 Pro 已生效 · 有效新用户 '+count+'/100':'有效新用户 '+count+'/100 · 再完成 '+Math.max(0,100-count)+' 位可自动获得永久 Pro';
   var until=s.lifetimePro?'永久有效':'Pro 剩余 '+Math.max(0,Math.ceil((Date.parse(s.proUntil)-Date.now())/86400000))+' 天';
-  return progress+' · 本月邀请奖励 '+s.monthDays+'/30 天 · '+until+'。好友首次成功生成后，双方按月度剩余额度自动到账，单次最多7天。权益绑定当前浏览器匿名账号；清除站点 Cookie 或换浏览器可能无法找回。';
+  return progress+' · 本月邀请奖励 '+s.monthDays+'/30 天 · '+until+'。直接邀请成功双方各得最多7天；好友再邀请新人时，上游仅得最多3天，最多两级。权益绑定当前浏览器匿名账号；清除站点 Cookie 或换浏览器可能无法找回。';
 }
 function copyInvite(){var u=sameStyleURL();if(u)copyText(u);else toast('请先配置在线版入口');}
 function applySameStyle(){
