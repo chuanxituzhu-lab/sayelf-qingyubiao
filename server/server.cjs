@@ -1,7 +1,7 @@
 // Node.js 22+; no npm install required. Calendar library is bundled locally.
 // Single process with an atomic local ledger.
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const {monthKey,complete}=require('./rewards.cjs');
+const {monthKey,referralCount,applyLifetimeMilestones,complete}=require('./rewards.cjs');
 const {createAiApiHandler}=require('./plugins/ai-api.cjs');
 const PORT=Number(process.env.PORT||8000),HOST=process.env.HOST||'127.0.0.1';
 const home=new URL(process.env.PUBLIC_URL||`http://localhost:${PORT}/`);
@@ -12,14 +12,15 @@ fs.mkdirSync(dir,{recursive:true});
 let db=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{users:{},events:[]};
 const eligible=new Map(),limits=new Map();
 function save(){fs.writeFileSync(file+'.tmp',JSON.stringify(db),{mode:0o600});fs.renameSync(file+'.tmp',file);}
+if(applyLifetimeMilestones(db))save();
 function session(req,res){
   const raw=(req.headers.cookie||'').match(/(?:^|;\s*)qy_session=([a-f0-9]{64})(?:;|$)/),old=raw&&raw[1];
   if(old&&db.users[old])return old;
   const id=crypto.randomBytes(32).toString('hex');
-  db.users[id]={code:crypto.randomBytes(12).toString('hex'),months:{},proUntil:new Date(0).toISOString(),generated:null,ref:null};save();
-  res.setHeader('Set-Cookie',`qy_session=${id}; HttpOnly; SameSite=Lax; Path=/; Max-Age=31536000${home.protocol==='https:'?'; Secure':''}`);return id;
+  db.users[id]={code:crypto.randomBytes(12).toString('hex'),months:{},proUntil:new Date(0).toISOString(),generated:null,ref:null,lifetimePro:false};save();
+  res.setHeader('Set-Cookie',`qy_session=${id}; HttpOnly; SameSite=Lax; Path=/; Max-Age=315360000${home.protocol==='https:'?'; Secure':''}`);return id;
 }
-function state(id,extra={}){const u=db.users[id],month=monthKey(new Date());return {code:u.code,home:home.href,proUntil:u.proUntil,month,monthDays:u.months[month]||0,generated:!!u.generated,...extra};}
+function state(id,extra={}){const u=db.users[id],month=monthKey(new Date()),successfulInvites=referralCount(db,u.code);return {code:u.code,home:home.href,proUntil:u.proUntil,month,monthDays:u.months[month]||0,successfulInvites,lifetimePro:!!u.lifetimePro||successfulInvites>=100,generated:!!u.generated,...extra};}
 function json(res,status,o){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(o));}
 async function body(req){let s='';for await(const c of req){s+=c;if(s.length>4096)throw Error('Request too large');}return JSON.parse(s||'{}');}
 const handleAiApi=createAiApiHandler({apiToken:process.env.API_TOKEN,readJson:body});
