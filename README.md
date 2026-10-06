@@ -94,6 +94,13 @@ git clone https://github.com/chuanxituzhu-lab/sayelf-qingyubiao.git ~/.workbuddy
 - 有效邀请按服务端匿名浏览器账号统计（服务端设置 Cookie 保留期为 10 年，浏览器可能更早清除），不代表经过实名校验的 100 位自然人；清除 Cookie 或更换浏览器可能创建新的匿名账号，永久 Pro 也绑定该账号且可能无法找回。
 - 自托管启动与账本安全边界见 [`server/README.md`](server/README.md) 和 [`references/self-hosted-node.md`](references/self-hosted-node.md)。
 
+## SkillHub 智能体包
+
+- `skillhub-agent/` 是面向腾讯 SkillHub 的独立智能体适配层，复用清理版 H5、二十四节气、折叠农历、分享和 7/7/3 两级奖励说明。
+- 构建发布包：`powershell -ExecutionPolicy Bypass -File scripts/build-skillhub-agent-package.ps1`。
+- 输出文件：`dist/sayelf-qingyubiao-skillhub-agent-v1.2.9.zip`。压缩包根目录直接包含 `SKILL.md`，只含纯文本文件；完整项目的私有账本和密钥不会进入包内。
+- SkillHub 包可离线使用晴雨表；需要自动奖励时，仍需在自己的环境运行完整项目的 `server/server.cjs`。
+
 ## 1.2.6 更新
 
 - 更正主应用和订阅页显示的微信号为 `chat_tea`（含下划线），复制微信号按钮同步使用新账号。
